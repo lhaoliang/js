@@ -28,15 +28,37 @@
           返回值：字符串 表示变量的数据类型  注意：返回值是小写
           注意：typeof 操作符只能判断基本数据类型  不能判断引用数据类型
         === 操作符 可以判断变量的数据类型  不能判断引用数据类型
-          语法：变量名 === 变量名
-          返回值：布尔值 表示变量的数据类型是否相同
-          注意：=== 操作符只能判断基本数据类型  不能判断引用数据类型
+          语法：变量名 === 类型名
+          返回值：布尔值 表示变量的数据类型是否是类型名
+          注意：=== 操作符只能判断基本数据类型  不能判断引用数据类型  可以判断null和undefined
         instanceof 操作符 可以判断变量的数据类型  不能判断基本数据类型
-          语法：变量名 instanceof 变量名
-          返回值：布尔值 表示变量的数据类型是否相同
+          语法：变量名 instanceof 类型名
+          返回值：布尔值 表示变量的数据类型是否是类型名
           注意：instanceof 操作符只能判断引用数据类型  不能判断基本数据类型
-
     */
+
+    /*
+      3.特殊数据类型
+        *null 空型 null  空值  定义为空值
+        *undefined 未定义型 undefined  表示变量定义了没有赋值
+        *bigint 大整数型 任意大整数
+        *symbol 符号型 symbol对象
+    */
+
+    let a;
+    console.log(a); // undefined
+    console.log(typeof a); // undefined
+    a = null;
+    console.log(a); // null
+    console.log(typeof a); // object
+
+    let b = null;
+    b = 23;
+    console.log(b); // 23
+    console.log(typeof b); // number
+
+    console.log(typeof fsf === 'undefined'); // true
+    console.log(typeof NaN === 'number'); // true
   </script>
 </body>
 </html>
