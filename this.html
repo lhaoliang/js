@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>this</title>
+</head>
+<body>
+  <script>
+
+    /**
+     * this 指向
+     * 1. 全局函数：window
+     * 2. 方法：对象实例
+     * 3. 构造函数：实例对象
+     * 4. apply/call/bind：指定对象
+     * 5. 箭头函数：父级作用域
+     * 6. new 操作符：实例对象
+     * 7. 事件处理函数：事件目标元素
+     * 8. setTimeout/setInterval：window
+     * 9. Promise：window
+     * 10. async/await：window
+     *
+     * 函数是如何被调用的？
+        │
+        ├─ new 调用？
+        │   → 是：this = 新创建的对象 ✅
+        │
+        ├─ call / apply / bind 显式绑定？
+        │   → 是：this = 指定的对象 ✅
+        │
+        ├─ 通过对象调用（obj.fn()）？
+        │   → 是：this = 点前面的对象 ✅
+        │
+        ├─ 是箭头函数？
+        │   → 是：this = 定义时外层作用域的 this ✅
+        │
+        └─ 以上都不是：
+            → 严格模式：this = undefined
+            → 非严格模式：this = 全局对象（window / global）
+     */
+
+    function fun() {
+      console.log(this);
+    }
+    fun(); // window
+
+  </script>
+</body>
+</html>
