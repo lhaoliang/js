@@ -12,7 +12,7 @@
       // 全局变量
       // 全局函数
     // 2. 函数执行上下文
-    // 3. 事件执行上下文
+
     function fun(a, b, c, d, e, f) {
       console.log(fun.length);
       console.log(arguments[1]);
@@ -31,6 +31,7 @@
     */
 
     function test(a, b) {
+      console.log(test.name)
       console.log(a);  // function a() {}
       console.log(b);  // undefined
       var b = 234;
@@ -52,7 +53,6 @@
         1.创建window对象
         2.将全局变量赋值给window对象的属性
         3.将全局函数赋值给window对象的属性
-
     */
   </script>
 </body>

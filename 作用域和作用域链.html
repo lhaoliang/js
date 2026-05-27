@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作用域和作用域链</title>
+</head>
+<body>
+  <script>
+    var globalVar = '我是全局变量'
+    function outer() {
+      var outerVar = '我是外层函数的变量'
+      function inner() {
+        var innerVar = '我是内层函数的变量'
+        console.log(innerVar)
+        console.log(outerVar)
+        console.log(globalVar)
+      }
+      inner()
+      // console.log(innerVar)
+    }
+    outer()
+
+
+    // ========== 块级作用域 ==========
+    {
+      var a = 'var 没有块级作用域'
+      let b = 'let 有块级作用域'
+      const c = 'const 有块级作用域'
+    }
+
+    console.log(a)
+    // console.log(b)  // 报错：b is not defined
+    // console.log(c)  // 报错：c is not defined
+
+
+    // ========== 作用域链查找顺序 ==========
+    var name = '全局 name'
+
+    function first() {
+      var name = 'first 的 name'
+
+      function second() {
+        var name = 'second 的 name'
+        console.log('在 second 中:', name)
+      }
+
+      second()
+    }
+
+    first()
+
+    console.log('在全局中:', name)
+  </script>
+</body>
+</html>
