@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>原型</title>
+</head>
+<body>
+  <script>
+    function Person () {
+    }
+    console.log(Person.prototype);
+    var p = new Person();
+    console.log(p);
+    console.log(p.__proto__);
+    console.log(p.__proto__.__proto__);
+
+    var num = 123;
+    function fn () {}
+    console.log(fn.prototype);
+    console.log(fn.__proto__);
+    console.log(fn.prototype.__proto__);
+    console.log(num.prototype);
+    console.log(num.__proto__);
+  </script>
+</body>
+</html>
