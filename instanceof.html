@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>instanceof</title>
+</head>
+<body>
+  <script>
+    // instanceof 操作符
+      // 用于判断一个对象是否是另一个构造函数的实例
+      // 返回值：boolean
+      // 说明：判断对象是否是构造函数的实例，返回值为 boolean 类型
+      // 注意：instanceof 操作符的判断结果是基于对象的原型链的，而不是基于对象的构造函数的
+      // 例如：new Person() instanceof Person // true
+      // 例如：new Person() instanceof Object // true
+    function Person () {
+    }
+    console.log(new Person() instanceof Person); // true
+  </script>
+</body>
+</html>

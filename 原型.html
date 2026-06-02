@@ -11,17 +11,33 @@
     }
     console.log(Person.prototype);
     var p = new Person();
-    console.log(p);
     console.log(p.__proto__);
     console.log(p.__proto__.__proto__);
 
-    var num = 123;
-    function fn () {}
-    console.log(fn.prototype);
-    console.log(fn.__proto__);
-    console.log(fn.prototype.__proto__);
-    console.log(num.prototype);
-    console.log(num.__proto__);
+
+    console.log(Person.constructor);
+
+    console.log(Person.__proto__.__proto__);
+
+    console.log(Function.prototype.__proto__);
+    console.log(Function.constructor);
+
+    console.log(Object.prototype);
+    console.log(Object.__proto__);
+    console.log(Object.constructor);
+    console.log(Object, "Object") ;
+    function Object() {}
+    console.log(Object, "fun Object")
+
+    var x = 10;
+    function fun() {
+      console.log(x);
+    }
+    function show(f) {
+      var x = 20;
+      f();
+    }
+    show(fun);
   </script>
 </body>
 </html>
