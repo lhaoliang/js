@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>对象</title>
+</head>
+<body>
+  <script>
+    // 递归深拷贝
+    function deepClone(obj, map = new WeakMap()) {
+      // 基本类型和 null 直接返回
+      if (obj === null || typeof obj !== 'object') {
+        return obj;
+      }
+
+      // 处理日期
+      if (obj instanceof Date) {
+        return new Date(obj);
+      }
+
+      // 处理正则
+      if (obj instanceof RegExp) {
+        return new RegExp(obj);
+      }
+
+      // 处理循环引用
+      if (map.has(obj)) {
+        return map.get(obj);
+      }
+
+      // 保持原型链
+      const clone = Array.isArray(obj) ? [] : Object.create(Object.getPrototypeOf(obj));
+      map.set(obj, clone);
+
+      // 递归拷贝所有属性（包括 Symbol key）
+      // 使用 for...in 只遍历可枚举属性，不包括原型链上的
+      for (const key of Reflect.ownKeys(obj)) {
+        const desc = Object.getOwnPropertyDescriptor(obj, key);
+        if (desc.get || desc.set) {
+          // 属性是 getter/setter，复制描述符
+          Object.defineProperty(clone, key, desc);
+        } else {
+          clone[key] = deepClone(obj[key], map);
+        }
+      }
+
+      return clone;
+    }
+
+    // --- 测试 ---
+    const original = {
+      name: 'Alice',
+      age: 25,
+      hobbies: ['reading', 'coding'],
+      info: { city: 'Beijing', zip: 100000 },
+      date: new Date(),
+      reg: /test/gi,
+    };
+    original.self = original; // 循环引用
+
+    const cloned = deepClone(original);
+    console.log(cloned);
+    console.log(cloned === original);          // false
+    console.log(cloned.info === original.info); // false
+    console.log(cloned.date === original.date); // false
+    console.log(cloned.self === cloned);        // true（循环引用正确）
+
+    function myDeepClone(obj) {
+      if (typeof obj !== "object" || obj === null) {
+        return obj;
+      }
+      const newObj = Array.isArray(obj) ? [] : {};
+      for(const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          continue;
+        }
+        newObj[key] = myDeepClone(obj[key]);
+      }
+      return newObj;
+    }
+  </script>
+</body>
+</html>

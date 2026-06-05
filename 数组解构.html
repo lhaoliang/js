@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数组解构</title>
+</head>
+<body>
+  <script>
+    // 数组解构
+    // 用于将数组中的元素赋值给变量
+    // 语法：[变量1, 变量2, 变量3, ...] = 数组
+    // 说明：将数组中的元素赋值给变量，变量的数量必须与数组的元素数量相同
+    // 例如：[a, b, c] = [1, 2, 3]
+    [a, b, c] = [1, 2, 3];
+    console.log(a, b, c);
+
+    const foo = Object.freeze({});
+    foo.a = 10;
+    console.log(foo.a); // undefined
+
+    const obj = {
+      a: 10,
+      b: 20,
+      c: 30,
+      d: {
+        aa: 100,
+        bb: 200
+      }
+    }
+    console.log(Object.values(obj));
+
+    // 数组reduce方法
+    // 用于将数组中的元素进行累计操作，返回一个值
+    // 语法：数组.reduce(回调函数, 初始值)
+    // 说明：将数组中的元素进行累计操作，返回一个值
+    // 例如：数组.reduce((pre, cur) => pre + cur, 0)  pre: 累计值，cur: 当前值 ，初始值为0
+    const arr = [1, 2, 3, 4, 5];
+    const sum = arr.reduce((pre, cur) => pre + cur, 0);
+    console.log(sum); // 15
+
+
+    const names = ["Alice", "Bob", "Tiff", "Bruce", "Alice", "Alice"];
+
+const countedNames = names.reduce((allNames, name, ) => {
+  console.log(allNames, name, );
+  const currCount = allNames[name] ?? 0;
+  console.log(currCount);
+  console.log({...allNames,}, [name]);
+  return {
+    ...allNames,
+    [name]: currCount + 1,
+  };
+}, {});
+   </script>
+</body>
+</html>
