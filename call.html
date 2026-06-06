@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>call</title>
+</head>
+<body>
+  <script>
+    // call方法
+    function call(fn, context, ...args) {
+      context = context || window;
+      context.fn = fn;
+      const res = context.fn(...args);
+      delete context.fn;
+      return res;
+    }
+
+    // apply方法
+    function apply(fn, context, args) {
+      context = context || window;
+      context.fn = fn;
+      const res = context.fn(...args);
+      delete context.fn;
+      return res;
+    }
+
+    // bind方法
+    function bind(fn, context, ...args) {
+      context = context || window;
+      return function (...args2) {
+        return fn.apply(context, [...args, ...args2]);
+      }
+    }
+  </script>
+</body>
+</html>
