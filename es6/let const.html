@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>let const</title>
+</head>
+
+<body>
+  <script>
+    // let 声明的变量是块级作用域的
+
+    let a = 10;
+    console.log(a); // 10
+    {
+      let a = 20;
+      console.log(a); // 20
+    }
+
+    // const 声明的变量是常量，不能重新赋值
+    // 注意：const 声明的变量必须在声明时赋值，不能在声明后赋值
+    // const aaa; // 报错
+    const b = 100;
+    console.log(b); // 100
+    // b = 200; // 报错
+
+    function fn(a, ...args) {
+      console.log( args, ...args)
+      console.log(Math.max.apply(null, args));
+      const maxNum = Math.max(...args);
+      console.log(maxNum); // 5
+    }
+    fn(1, 2, 3, 4, 5);
+
+
+    // Symbol 值是唯一的，不能被其他值转换为 Symbol 值
+    // Symbol 值的描述可以是字符串，也可以是其他值
+    // Symbol 值可以作为对象的属性名，也可以作为数组的索引
+
+    const name = Symbol('name');
+    const name2 = Symbol('name');
+    console.log(name);
+
+
+    console.log(name === name2); // false
+
+    const obj = {
+      a: 1
+    };
+    obj[name] = 'zhangsan';
+    console.log(obj);
+    // Symbol 取属性值时，需要使用方括号 [] 包裹 Symbol 值
+    console.log(obj[name]);
+    // Symbol 值不能被枚举，不能被遍历
+    for (let key in obj) {
+      console.log(key);
+    }
+    // 但是可以使用 Object.keys() 方法获取对象的所有属性名
+    const keys = Object.keys(obj);
+    console.log(keys); // ['a', 'name']
+    // 也可以使用 for...of 循环遍历对象的所有属性名
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        console.log(key);
+      }
+    }
+
+    // 获取Symbol 声明的属性
+    let s = Object.getOwnPropertySymbols(obj);
+    console.log(s); // [Symbol(name)]
+    console.log(s[0]); // Symbol(name)
+
+    let m = Reflect.ownKeys(obj);
+    console.log(m); // ['a', Symbol(name)]
+  </script>
+</body>
+
+</html>
