@@ -12,17 +12,21 @@
     const arr = [1, 2, 3, 4, 5];
     console.log(arr); // [1, 2, 3, 4, 5]
 
+    // 定义一个生成器函数，用于生成斐波那契数列
     function* fibs() {
-      let a = 0;
-      let b = 1;
-      while (true) {
-        yield a;
-        [a, b] = [b, a + b];
+      let a = 0;  // 第一个斐波那契数
+      let b = 1;  // 第二个斐波那契数
+      while (true) {  // 无限循环，可以持续生成数列
+        yield a;  // 暂停并返回当前的a值
+        [a, b] = [b, a + b];  // 解构赋值，更新a和b的值：a变成b，b变成a+b
       }
     }
 
+    // 使用解构赋值从生成器中获取前6个斐波那契数
+    // 每次解构会从生成器中获取下一个值
     let [first, second, third, fourth, fifth, sixth] = fibs();
-    sixth // 5
+    // first = 0, second = 1, third = 1, fourth = 2, fifth = 3, sixth = 5
+    sixth // 5  // 第六个斐波那契数是5
   </script>
 
 </body>
