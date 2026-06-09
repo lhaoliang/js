@@ -12,6 +12,17 @@
     const arr = [1, 2, 3, 4, 5];
     console.log(arr); // [1, 2, 3, 4, 5]
 
+    function* fibs() {
+      let a = 0;
+      let b = 1;
+      while (true) {
+        yield a;
+        [a, b] = [b, a + b];
+      }
+    }
+
+    let [first, second, third, fourth, fifth, sixth] = fibs();
+    sixth // 5
   </script>
 
 </body>
