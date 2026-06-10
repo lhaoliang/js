@@ -10,6 +10,27 @@
     const sym = Symbol("sym");
     console.log(sym); // Symbol(sym)
     console.log(typeof sym); // symbol
+
+    const obj = {
+      [sym]: "hello"
+    }
+    console.log(obj[sym]); // hello
+    const n = Object.getOwnPropertySymbols(obj); // [Symbol(sym)]
+    console.log(n); // [Symbol(sym)]
+
+    // symbol 不能被枚举
+    for (let key in obj) {
+      console.log(obj[sym]); // hello
+    }
+
+    // symbol for
+    const sa = Symbol.for("sa");
+    const sb = Symbol.for("sa");
+    console.log(sa === sb); // true
+
+    const key = Symbol.keyFor(sa); // sa
+    console.log(key); // sa
+
   </script>
 </body>
 </html>
