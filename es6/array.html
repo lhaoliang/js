@@ -40,6 +40,18 @@
       console.log(age, sex);
     }
     fun(obj);
+
+
+    const array = [1, 2, 3];
+    const name = "why";
+    function fun2(x, y, z) {
+      console.log(x, y, z);
+    }
+    // fun2.apply(null, array)
+    // fun2(...array)
+    // fun2(...name)
+    const newArray = [...array, ...name];
+    console.log(newArray); // [1, 2, 3, 'w', 'h', 'y']
   </script>
 
 </body>
