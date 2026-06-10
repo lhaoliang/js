@@ -73,6 +73,16 @@
 
     let m = Reflect.ownKeys(obj);
     console.log(m); // ['a', Symbol(name)]
+
+    for ( let i = 0; i < 10; i++) {
+      console.log(i);
+    }
+
+    var foo = "foo";
+    if (true) {
+      console.log(foo); // bar
+      let foo = "bar";
+    }
   </script>
 </body>
 

@@ -27,6 +27,19 @@
     let [first, second, third, fourth, fifth, sixth] = fibs();
     // first = 0, second = 1, third = 1, fourth = 2, fifth = 3, sixth = 5
     sixth // 5  // 第六个斐波那契数是5
+
+
+    let obj = {
+      name: "张三",
+      age: 18,
+      sex: "男",
+    }
+    function fun({ name, ...args }) {
+      console.log(name, args);
+      const { age, sex } = args;
+      console.log(age, sex);
+    }
+    fun(obj);
   </script>
 
 </body>
