@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>flat flatMap</title>
+</head>
+<body>
+  <script>
+    // flatMap
+    // 可以将数组中的每个元素都调用一次提供的函数，然后将所有结果展平为一个数组
+    const arr = [1, 2, 3, 4, 5];
+    const result = arr.flatMap(item => item * 2);
+    console.log(result);
+    // [2, 4, 6, 8, 10]
+
+    // flat 应用场景
+    const messages = ["hello world", "my name is apple", "你好 你好"]
+    const flatMessages = messages.flatMap(item => item.split(" "));
+    console.log(flatMessages);
+
+    // flat 创建一个新的数组，并根据指定深度递归地将所有子数组元素拼接到新的数组中。
+    // 如果不指定深度，默认递归深度为1
+    const news = [10, 20, [2, 9], [[30, 34], [10, 45]], 78, [55, 88]]
+    const flatNews = news.flat();
+    const flatNews2 = news.flat(2);
+    console.log(flatNews);
+    console.log(flatNews2);
+  </script>
+</body>
+</html>

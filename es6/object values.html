@@ -34,6 +34,15 @@
     // [["0", "h"], ["1", "e"], ["2", "l"], ["3", "l"], ["4", "o"]]
     console.log(Object.entries([{name: "zhangsan"},"abc", "def", "ghi" ]))
     // [[0, object], [1, "abc"], [2, "def"], [3, "ghi"]]]
+
+    const allDesc = Object.getOwnPropertyDescriptors(obj);
+    console.log(allDesc);
+
+    // Object.fromEntries
+    const entries = Object.entries(obj);
+    console.log(entries);
+    const obj2 = Object.fromEntries(entries);
+    console.log(obj2);
   </script>
 </body>
 </html>
