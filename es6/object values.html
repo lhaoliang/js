@@ -38,11 +38,23 @@
     const allDesc = Object.getOwnPropertyDescriptors(obj);
     console.log(allDesc);
 
-    // Object.fromEntries
+    // Object.fromEntries 将entries转换为对象
     const entries = Object.entries(obj);
     console.log(entries);
     const obj2 = Object.fromEntries(entries);
     console.log(obj2);
+
+    // Object.fromEntries 应用场景
+    // 1. 解析url参数
+    // 2. 解析json字符串
+    const queryString = "name=zhangsan&age=18&sex=male";
+    const queryParams = new URLSearchParams(queryString);
+    for (const param of queryParams) {
+      console.log(param);
+    }
+    console.log(queryParams);
+    const queryParams2 = Object.fromEntries(queryParams);
+    console.log(queryParams2);
   </script>
 </body>
 </html>

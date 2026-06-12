@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bigint</title>
+</head>
+<body>
+  <script>
+    const maxInt = Number.MAX_SAFE_INTEGER;
+    console.log(maxInt);
+    console.log(maxInt + 1);
+    console.log(maxInt + 2);
+    console.log(maxInt + 10);
+
+    const bigInt = 154561215432134611231n;
+    console.log(bigInt);
+    // console.log(bigInt + 1); // 不可以这样加 格式不一样
+    console.log(typeof bigInt);
+    console.log(bigInt + 11n);
+
+    const bigNum = Number(bigInt); // 可以转换为数字 但是精度会丢失
+    console.log(bigNum);
+    console.log(typeof bigNum);
+  </script>
+</body>
+</html>
