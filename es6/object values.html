@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>object values</title>
+</head>
+<body>
+  <script>
+    const obj = {
+      name: 'zhangsan',
+      age: 18,
+      sex: 'male'
+    }
+    const values = Object.values(obj);
+    const keys = Object.keys(obj);
+    console.log(values, keys);
+
+    // object values传人参数 用的少
+    console.log(Object.values(["abc", "def", "ghi"]))
+    console.log(Object.values("hello"))
+    console.log("hello".split(""))
+
+
+    // Object.entries
+    // 可以获取到一个数组 数组中会存放可枚举属性的键值对数组
+    console.log(Object.entries(obj));
+    for (const item of Object.entries(obj)) {
+      console.log(item);
+      const [key, value] = item;
+    }
+
+    console.log(Object.entries("hello"))
+    // [["0", "h"], ["1", "e"], ["2", "l"], ["3", "l"], ["4", "o"]]
+    console.log(Object.entries([{name: "zhangsan"},"abc", "def", "ghi" ]))
+    // [[0, object], [1, "abc"], [2, "def"], [3, "ghi"]]]
+  </script>
+</body>
+</html>

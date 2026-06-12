@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>weakMap</title>
+</head>
+<body>
+  <script>
+  // weakMap 在响应式系统中，用于存储响应式数据的依赖
+
+  const obj1 = {
+    name: 'zhangsan',
+    age: 18
+  }
+  function obj1NameFn1() {
+    console.log("obj1NameFn1被执行")
+  }
+  function obj1NameFn2() {
+    console.log("obj1NameFn2被执行")
+  }
+  function obj1AgeFn1() {
+    console.log("obj1AgeFn1被执行")
+  }
+  function obj1AgeFn2() {
+    console.log("obj1AgeFn2被执行")
+  }
+
+
+    const weakMap = new WeakMap();
+    const map = new Map();
+    map.set("name", [obj1NameFn1, obj1NameFn2]);
+    map.set("age", [obj1AgeFn1, obj1AgeFn2]);
+    weakMap.set(obj1, map);
+    console.log(weakMap.get(obj1));
+
+    obj1.name = 'lisi';
+    const targetMap = weakMap.get(obj1);
+    console.log(targetMap);
+    const nameFns = targetMap.get("name");
+    nameFns.forEach(fn => fn());
+    const ageFns = targetMap.get("age");
+    ageFns.forEach(fn => fn());
+
+
+    const result1 = Math.pow(3, 3)
+    const result2 = 3 ** 3
+    console.log(result1, result2);
+
+  </script>
+
+</body>
+</html>
