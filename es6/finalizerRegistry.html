@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>finalizerRegistry</title>
+</head>
+<body>
+  <script>
+    let obj = { name: "zhangsan" };
+    const finalizationRegistry = new FinalizationRegistry((target) => {
+      console.log("对象被垃圾回收了");
+      console.log(target);
+    });
+    finalizationRegistry.register(obj, "obj");
+    // 有强引用 会阻止对象被垃圾回收
+    // let info = obj;
+    // obj = null;
+
+    // 有弱引用 会阻止对象被垃圾回收 但是对象会被垃圾回收
+    // let info = new WeakSet();
+    // info.add(obj);
+    // obj = null;
+
+    // weakRef 弱引用 会阻止对象被垃圾回收 但是对象会被垃圾回收
+    let info = new WeakRef(obj);
+    obj = null;
+
+    setTimeout(() => {
+      console.log(info);
+      console.log(info.deref());
+    }, 10000);
+  </script>
+</body>
+</html>
