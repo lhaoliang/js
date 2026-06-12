@@ -52,6 +52,13 @@
     // map 数据结构
     // 用于存储键值对
     // 说明：map 数据结构的键可以是任意值，值也可以是任意值
+
+    // weakmap 数据结构
+    // 用于存储键值对
+    // 说明：weakmap 数据结构的键可以是对象类型的数据，值也可以是任意值
+    // 说明：weakmap 数据结构的键是弱引用的，不会阻止垃圾回收器回收  map 数据结构的键是强引用的，会阻止垃圾回收器回收
+    const weakMap = new WeakMap();
+
     // 例如：let map = new Map();
     // 例如：map.set('name', 'zhangsan');
     // 例如：console.log(map); // Map {name => zhangsan}
@@ -61,11 +68,40 @@
     // 例如：console.log(map.size); // 0
     let map = new Map();
     map.set('name', 'zhangsan');
+    map.set(Symbol('abc'), '123');
     console.log(map); // Map {name => zhangsan}
     console.log(map.get('name')); // zhangsan
-    map.delete('name');
+    // map.delete('name');
     console.log(map); // Map {}
     console.log(map.size); // 0
+
+    // 不能使用对象作为键
+    const obj1 = { name: "李四" };
+    const obj2 = { name: "张三" };
+    const arr3 = [12,23, "lili", {a: 1}];
+    const info = {
+      [obj1]: 18,
+      [obj2]: 19,
+      [arr3]: 20,
+    }
+    // 对象会转换为字符串，作为键 [object, Object]
+    console.log(info)
+
+
+    //map 可以
+    const newMap = new Map();
+    newMap.set(arr3, 20);
+    newMap.set(obj1, 18);
+    newMap.set(obj2, 19);
+    console.log(newMap.get(obj1));
+    console.log(newMap.get(obj2));
+    console.log(newMap.get(arr3));
+    console.log(newMap); // Map {[12, 23, "lili"] => 20}
+
+    newMap.forEach((value, key) => console.log(value, key));
+    for (const [key, value] of newMap) {
+      console.log(key, value);
+    }
   </script>
 </body>
 
