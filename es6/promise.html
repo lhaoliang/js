@@ -23,12 +23,26 @@
     // 可以使用 Promise.reject() 方法创建一个失败状态的 Promise
     // 注意：Promise.reject() 方法创建的 Promise 状态为 rejected，不能改变
 
-    let pro = new Promise((resolve, reject) => {
+    // 传入的这个函数executor，会在 Promise 创建时立即执行
+    const promise = new Promise((resolve, reject) => {
+      console.log(resolve);
+      console.log(reject);
       resolve('成功');
-      reject('失败');
+      // reject('失败');
+      console.log('立即执行的回调函数');
     });
-    pro.finally(err => console.log(err));
-    console.log(pro);
+    console.log(promise);
+    // then() 方法注册成功回调函数
+    // then 方法传入的回调函数 会在 Promise 状态改变为 fulfilled 时调用 即 resolve() 方法调用时调用
+    // 注意：then() 方法可以链式调用，每个 then() 方法返回一个新的 Promise
+    // .then() 方法 接受两个回调函数，一个是成功回调函数，一个是失败回调函数
+    promise.then(success => console.log(success), err => console.log(err));
+    // catch() 方法注册失败回调函数
+    // catch 方法传入的回调函数 会在 Promise 状态改变为 rejected 时调用 即 reject() 方法调用时调用
+    promise.catch(err => console.log(err));
+    // finally() 方法注册无论状态改变都会调用的回调函数
+    // finally 方法传入的回调函数 会在 Promise 状态改变时调用 即 resolve() 方法或 reject() 方法调用时调用
+    promise.finally(res => console.log(res));
   </script>
 </body>
 </html>

@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promise前世</title>
+</head>
+
+<body>
+  <script>
+    function requestData(url) {
+      // 模拟异步请求
+      setTimeout(() => {
+        if (url === 'http://www.baidu.com') {
+          let names = ['张三', '李四', '王五'];
+          return names;
+        } else {
+          let message = "请求失败";
+          return message;
+        }
+      }, 3000);
+    }
+    // 由于是异步 所以拿不到数据
+    const data = requestData('http://www.baidu.com');
+    console.log(data);
+
+    // 以前解决 传入两个函数
+    function requestData2(url, successCallback, errorCallback) {
+      // 模拟异步请求
+      setTimeout(() => {
+        if (url === 'http://www.baidu.com') {
+          let names = ['张三', '李四', '王五'];
+          successCallback(names);
+        } else {
+          let message = "请求失败";
+          errorCallback(message);
+        }
+      }, 3000);
+    }
+    const data2 = requestData2('http://www.baidu.com', (names) => {
+      console.log(names);
+    }, (message) => {
+      console.log(message);
+    });
+
+    // 更好的方法 Promise 承诺
+    function requestData3() {
+      return "承诺";
+    }
+    const data3 = requestData3();
+    console.log(data3);
+  </script>
+</body>
+
+</html>

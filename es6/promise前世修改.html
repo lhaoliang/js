@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promise前世</title>
+</head>
+
+<body>
+  <script>
+    // 以前解决 传入两个函数
+    function requestData(url, resolve, reject) {
+      return new Promise((resolve, reject) => {
+      // 模拟异步请求
+      setTimeout(() => {
+        if (url === 'http://www.baidu.com') {
+          let names = ['张三', '李四', '王五'];
+          resolve(names);
+        } else {
+          let message = "请求失败";
+          reject(message);
+        }
+      }, 3000);
+      }
+   )}
+
+    const promise = requestData('http://www.baidu.com');
+    promise.then(names => {
+      console.log(names);
+    });
+    promise.catch(message => {
+      console.log(message);
+    });
+
+  </script>
+</body>
+
+</html>
