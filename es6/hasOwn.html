@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hasOwn</title>
+</head>
+<body>
+  <script>
+    // hasOwn 方法
+    let obj = {
+      name: '张三',
+      age: 18
+    };
+    console.log(obj.hasOwnProperty('name'));
+    console.log(obj.hasOwnProperty('age'));
+    console.log(obj.hasOwnProperty('toString'));
+
+    // Object.hasOwnProperty 方法判断是否是对象自己的属性
+    console.log(Object.hasOwnProperty.call(obj, 'name'));
+    console.log(Object.hasOwnProperty.call(obj, 'age'));
+    console.log(Object.hasOwnProperty.call(obj, 'toString'));
+
+    // hasOwn 和 Object.hasOwnProperty 的区别
+    // hasOwn 方法判断是否是对象自己的属性，不包括继承的属性
+    // Object.hasOwnProperty 方法判断是否是对象自己的属性，包括继承的属性
+    console.log(obj.hasOwnProperty('toString'));
+    console.log(Object.hasOwnProperty.call(obj, 'toString'));
+
+    // 创建一个空对象
+    // let emptyObj = Object.create(null);
+
+  </script>
+</body>
+</html>

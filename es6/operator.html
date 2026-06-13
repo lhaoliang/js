@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>operator</title>
+</head>
+<body>
+  <script>
+    // 逻辑运算符
+    let a = 10;
+    let b = 20;
+    let c = a && b;
+    console.log(c);
+    // 逻辑或运算符
+    let d = a || b;
+    console.log(d);
+    // 逻辑非运算符
+    let e = !a;
+    console.log(e);
+    // ||= 逻辑或赋值运算符  当 a 为 false 时赋值
+    let f = a ||= b;
+    console.log(f);
+    // &&= 逻辑与赋值运算符
+    let g = a &&= b;
+    console.log(g);
+    // ??= 逻辑空赋值运算符   undefined 或 null 时赋值
+    let h = a ??= b;
+    console.log(h);
+  </script>
+</body>
+</html>

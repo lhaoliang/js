@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class</title>
+</head>
+<body>
+  <script>
+    // 类
+    class Person {
+      // 也是属性，只是在类中定义的属性，不是在constructor中定义的属性
+      // public 属性
+      height = 1.8;
+
+      // 对象属性私有： 约定：属性名前加下划线
+      _province = '浙江省';
+      // 第二种加 # 表示私有属性
+      #city = '杭州';
+      // 第三种加 private 表示私有属性
+      // private address = '中国';
+
+      // 类属性 ： 用static 关键字定义的属性，是类的属性，不是对象的属性
+      static country = '中国';
+      static #weight = 800;
+
+      constructor(name, age) {
+        // 对象中的属性，是对象自己的属性，不包括继承的属性 在constructor中定义
+        this.name = name;
+        this.age = age;
+        // this.address = '中国';
+      }
+
+      // 静态代码块 ： 用static 关键字定义的代码块，是类的代码块，不是对象的代码块
+      static {
+        // 静态代码块中可以访问类的属性，不能访问对象的属性 只会执行一次 刚定义类时执行一次
+        console.log(Person.country);
+        console.log(Person.#weight);
+        console.log('静态代码块');
+      }
+    }
+
+    const p = new Person('张三', 18);
+    console.log(p);
+    console.log(p.height);
+    console.log(p._province);
+    // console.log(p.#city);  报错：私有属性不能直接访问
+    console.log(p.country); // undefined
+    console.log(Person.country); // 中国
+
+    const allDesc = Object.getOwnPropertyDescriptors(p);
+    console.log(allDesc);
+  </script>
+</body>
+</html>
