@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>类方法_all</title>
+</head>
+
+<body>
+  <script>
+    // 类方法 Promise.all 可以将多个promise对象转换为promise数组
+    // 所有promise对象都成功，才会返回成功的结果 有一个失败，就会返回失败的结果
+    const p1 = new Promise((resolve, reject) => {
+      reject("reject失败1");
+      // resolve("resolve成功1");
+    });
+    const p2 = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve("resolve成功2");
+      }, 2000);
+    });
+    const p3 = new Promise(resolve => {
+    });
+    Promise.all([p3, p1, p2, { name: 'apple' }]).then(res => console.log("res", res)).catch(err => console.log("err", err));
+
+    // 类方法 Promise.allSettled 可以将多个promise对象转换为promise数组
+    // 所有promise对象都执行完毕，才会返回结果
+    // 无论成功失败，都会返回结果
+    Promise.allSettled([p1, p2, p3, { name: 'apple' }]).then(res => console.log("res", res));
+  </script>
+</body>
+
+</html>
