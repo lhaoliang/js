@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>错误处理</title>
+</head>
+<body>
+  <script>
+    // 错误处理
+    // 1. throw new Error("错误信息");
+    // throw new Error("这是一个错误");
+
+    // 2. try...catch
+    try {
+      let a = undefined
+      console.log(a.name)
+    } catch (error) {
+      console.log(error);
+    }
+
+    console.log("try...catch 之后, 会继续执行");
+
+    function doSomething(){
+      if (Date.now() % 2 === 1) {
+        console.log("当前时间为奇数秒，可以执行任务")
+      } else {
+        throw new Error("当前时间为偶数秒，不能执行任务")
+      }
+    }
+
+    try {
+      doSomething()
+    } catch (error) {
+      alert(error.message)
+    }
+    console.log("doSomething() 之后, 会继续执行");
+  </script>
+</body>
+</html>
