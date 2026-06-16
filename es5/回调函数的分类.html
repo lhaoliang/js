@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>回调函数的分类</title>
+</head>
+<body>
+  <script>
+    // 回调函数的分类
+    // 同步回调函数：在调用者中调用回调函数，回调函数执行完毕后，调用者才会继续执行
+    // 异步回调函数：在调用者中调用回调函数，回调函数执行完毕后，调用者才会继续执行，但是回调函数的执行是异步的
+
+    /*
+      同步回调函数
+        数组遍历的相关回调函数
+        promise的executor函数
+    */
+     // 1. 数组遍历的相关回调函数
+     const arr = [1, 2, 3, 4, 5];
+     arr.forEach(item => console.log(item));
+     console.log("forEach()之后");
+
+
+
+    /*
+      异步回调函数
+        setTimeout
+        setInterval
+        ajax
+        fs.readFile
+    */
+
+     // 2. setTimeout
+     setTimeout(() => {
+       console.log("setTimeout 异步回调函数 会后调用");
+     }, 1000);
+     console.log("setTimeout()之后 会先调用");
+  </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>函数对象和实例对象</title>
+</head>
+<body>
+  <script>
+    // 函数对象和实例对象
+    // 函数对象：函数是一个对象，函数对象有属性和方法
+    // 实例对象：实例对象是函数对象的实例，实例对象有属性和方法
+    function Person(name, age) {
+      this.name = name;
+      this.age = age;
+    }
+    const p1 = new Person("张三", 18);
+    console.log(p1);
+
+    console.log(Function.prototype);
+  </script>
+</body>
+</html>
