@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript 完整课程目录</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 3px solid #3498db;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+    .part {
+      margin-bottom: 30px;
+    }
+    .part-title {
+      color: #2c3e50;
+      font-size: 24px;
+      border-left: 5px solid #3498db;
+      padding-left: 15px;
+      margin-bottom: 15px;
+    }
+    .chapter-list {
+      list-style: none;
+      padding: 0;
+    }
+    .chapter-item {
+      margin: 10px 0;
+      padding: 15px 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #3498db;
+      transition: all 0.3s ease;
+    }
+    .chapter-item:hover {
+      background: #e8f4fc;
+      transform: translateX(5px);
+    }
+    .chapter-link {
+      text-decoration: none;
+      color: #2c3e50;
+      font-size: 18px;
+      font-weight: 500;
+      display: block;
+    }
+    .chapter-link:hover {
+      color: #3498db;
+    }
+    .chapter-desc {
+      color: #7f8c8d;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    .part1 .chapter-item { border-left-color: #3498db; }
+    .part2 .chapter-item { border-left-color: #e74c3c; }
+    .part3 .chapter-item { border-left-color: #f39c12; }
+    .part4 .chapter-item { border-left-color: #27ae60; }
+    .part5 .chapter-item { border-left-color: #8e44ad; }
+    .part6 .chapter-item { border-left-color: #16a085; }
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      color: #7f8c8d;
+    }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 20px 0;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    .stat-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #3498db;
+    }
+    .stat-label {
+      color: #7f8c8d;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>JavaScript 完整课程</h1>
+    
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-number">12</div>
+        <div class="stat-label">章节</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">46</div>
+        <div class="stat-label">知识点</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">6</div>
+        <div class="stat-label">大部分</div>
+      </div>
+    </div>
+
+    <div class="part part1">
+      <h2 class="part-title">第一部分：JavaScript 基础（ES5）</h2>
+      <ul class="chapter-list">
+        <li class="chapter-item">
+          <a href="第一章_数据基础.html" class="chapter-link">第一章：数据基础</a>
+          <div class="chapter-desc">数据类型、数据内存变量、数组解构</div>
+        </li>
+        <li class="chapter-item">
+          <a href="第二章_函数核心.html" class="chapter-link">第二章：函数核心</a>
+          <div class="chapter-desc">函数对象和实例对象、作用域和作用域链、闭包、回调函数、函数柯里化</div>
+        </li>
+        <li class="chapter-item">
+          <a href="第三章_面向对象.html" class="chapter-link">第三章：面向对象</a>
+          <div class="chapter-desc">this 指向、call/apply/bind、原型和原型链、instanceof</div>
+        </li>
+        <li class="chapter-item">
+          <a href="第四章_高级技巧.html" class="chapter-link">第四章：高级技巧</a>
+          <div class="chapter-desc">深拷贝和浅拷贝、圣杯模式、防抖和节流、预编译</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="part part2">
+      <h2 class="part-title">第二部分：现代 JavaScript（ES6+）</h2>
+      <ul class="chapter-list">
+        <li class="chapter-item">
+          <a href="第五章_语法增强.html" class="chapter-link">第五章：语法增强</a>
+          <div class="chapter-desc">let/const、运算符扩展、BigInt、globalThis</div>
+        </li>
+        <li class="chapter-item">
+          <a href="第六章_数据结构.html" class="chapter-link">第六章：数据结构</a>
+          <div class="chapter-desc">Set、Map、WeakSet、WeakMap、Symbol</div>
+        </li>
+        <li class="chapter-item">
+          <a href="第七章_对象增强.html" class="chapter-link">第七章：对象增强</a>
+          <div class="chapter-desc">Object 方法扩展、Object.hasOwn()、数组方法扩展</div>
+        </li>
+        <li class="chapter-item">
+          <a href="第八章_面向对象进阶.html" class="chapter-link">第八章：面向对象进阶</a>
+          <div class="chapter-desc">Class 基础、类的继承、Getter/Setter、Mixin 模式</div>
+        </li>
+        <li class="chapter-item">
+          <a href="第九章_错误处理.html" class="chapter-link">第九章：错误处理</a>
+          <div class="chapter-desc">错误类型、try...catch、自定义错误、FinalizationRegistry</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="part part3">
+      <h2 class="part-title">第三部分：异步编程（Promise 专题）</h2>
+      <ul class="chapter-list">
+        <li class="chapter-item">
+          <a href="第十章_Promise基础.html" class="chapter-link">第十章：Promise 基础</a>
+          <div class="chapter-desc">异步编程演进、Promise 状态、基本使用</div>
+        </li>
+        <li class="chapter-item">
+          <a href="第十一章_Promise核心方法.html" class="chapter-link">第十一章：Promise 核心方法</a>
+          <div class="chapter-desc">then()、catch()、finally()、链式调用</div>
+        </li>
+        <li class="chapter-item">
+          <a href="第十二章_Promise静态方法.html" class="chapter-link">第十二章：Promise 静态方法</a>
+          <div class="chapter-desc">Promise.resolve()、Promise.reject()、Promise.all()、Promise.race()、Promise.any()</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="part part4">
+      <h2 class="part-title">第四部分：Node.js 入门（扩展）</h2>
+      <ul class="chapter-list">
+        <li class="chapter-item">
+          <span class="chapter-link" style="color: #95a5a6;">第十三章：Node.js 基础</span>
+          <div class="chapter-desc">Node.js 概述、模块系统、文件系统（即将推出）</div>
+        </li>
+        <li class="chapter-item">
+          <span class="chapter-link" style="color: #95a5a6;">第十四章：Node.js 进阶</span>
+          <div class="chapter-desc">HTTP 服务、Express 框架、数据库连接（即将推出）</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      <p>JavaScript 完整课程 - 从基础到高级的系统学习路径</p>
+      <p>建议学习时间：4-7 周</p>
+    </div>
+  </div>
+</body>
+</html>

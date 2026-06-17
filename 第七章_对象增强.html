@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第七章：对象增强</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .section {
+      background: white;
+      margin: 20px 0;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 3px solid #e67e22;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #34495e;
+      border-left: 4px solid #e67e22;
+      padding-left: 15px;
+      margin-top: 30px;
+    }
+    h3 {
+      color: #7f8c8d;
+      margin-top: 25px;
+    }
+    .concept {
+      background: #fef5e7;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #e67e22;
+    }
+    .example {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid #dee2e6;
+      font-family: 'Courier New', monospace;
+    }
+    .output {
+      background: #d4edda;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #c3e6cb;
+    }
+    .warning {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #ffeaa7;
+    }
+    code {
+      background: #f1f2f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .nav {
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: #ecf0f1;
+      border-radius: 8px;
+    }
+    .nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #3498db;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="目录.html">目录</a>
+    <a href="第六章_数据结构.html">上一章</a>
+    <a href="第八章_面向对象进阶.html">下一章</a>
+  </div>
+
+  <h1>第七章：对象增强</h1>
+  
+  <div class="section">
+    <h2>7.1 Object 方法扩展</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>ES6 为 Object 类型添加了许多新的方法，使对象操作更加方便。
+    </div>
+
+    <h3>7.1.1 Object.keys()、Object.values()、Object.entries()</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+const obj = {
+  name: "Alice",
+  age: 25,
+  city: "Beijing"
+};
+
+// Object.keys() - 获取所有键
+const keys = Object.keys(obj);
+console.log(keys);  // ["name", "age", "city"]
+
+// Object.values() - 获取所有值
+const values = Object.values(obj);
+console.log(values);  // ["Alice", 25, "Beijing"]
+
+// Object.entries() - 获取所有键值对
+const entries = Object.entries(obj);
+console.log(entries);  // [["name", "Alice"], ["age", 25], ["city", "Beijing"]]
+
+// 遍历对象
+for (const [key, value] of Object.entries(obj)) {
+  console.log(`${key}: ${value}`);
+}
+// "name: Alice"
+// "age: 25"
+// "city: Beijing"
+
+// 将对象转换为 Map
+const map = new Map(Object.entries(obj));
+console.log(map);  // Map {"name" => "Alice", "age" => 25, "city" => "Beijing"}
+      </pre>
+    </div>
+
+    <h3>7.1.2 Object.fromEntries()</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// Object.fromEntries() - 将键值对数组转换为对象
+const entries = [["name", "Alice"], ["age", 25], ["city", "Beijing"]];
+const obj = Object.fromEntries(entries);
+console.log(obj);  // {name: "Alice", age: 25, city: "Beijing"}
+
+// 应用场景1：解析 URL 参数
+const queryString = "name=Alice&age=25&city=Beijing";
+const params = new URLSearchParams(queryString);
+const paramObj = Object.fromEntries(params);
+console.log(paramObj);  // {name: "Alice", age: "25", city: "Beijing"}
+
+// 应用场景2：将 Map 转换为对象
+const map = new Map([["name", "Alice"], ["age", 25]]);
+const mapObj = Object.fromEntries(map);
+console.log(mapObj);  // {name: "Alice", age: 25}
+
+// 应用场景3：过滤对象属性
+const scores = { math: 90, english: 85, science: 95, art: 80 };
+const passed = Object.fromEntries(
+  Object.entries(scores).filter(([key, value]) => value >= 85)
+);
+console.log(passed);  // {math: 90, english: 85, science: 95}
+      </pre>
+    </div>
+
+    <h3>7.1.3 Object.assign()</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// Object.assign() - 合并对象
+const target = { a: 1, b: 2 };
+const source1 = { b: 3, c: 4 };
+const source2 = { d: 5 };
+
+const result = Object.assign(target, source1, source2);
+console.log(result);  // {a: 1, b: 3, c: 4, d: 5}
+console.log(target === result);  // true（target 被修改了）
+
+// 浅拷贝
+const original = { a: 1, b: { c: 2 } };
+const copy = Object.assign({}, original);
+console.log(copy);  // {a: 1, b: {c: 2}}
+console.log(copy === original);  // false
+console.log(copy.b === original.b);  // true（浅拷贝）
+
+// 默认值
+const defaults = { theme: "light", language: "zh" };
+const userSettings = { theme: "dark" };
+const settings = Object.assign({}, defaults, userSettings);
+console.log(settings);  // {theme: "dark", language: "zh"}
+      </pre>
+    </div>
+
+    <h3>7.1.4 Object.getOwnPropertyDescriptors()</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+const obj = {
+  name: "Alice",
+  get greeting() {
+    return `Hello, ${this.name}`;
+  }
+};
+
+// 获取所有属性描述符
+const descriptors = Object.getOwnPropertyDescriptors(obj);
+console.log(descriptors);
+// {
+//   name: {value: "Alice", writable: true, enumerable: true, configurable: true},
+//   greeting: {get: ƒ, set: undefined, enumerable: true, configurable: true}
+// }
+
+// 深拷贝（包括 getter/setter）
+const copy = Object.defineProperties({}, Object.getOwnPropertyDescriptors(obj));
+console.log(copy.greeting);  // "Hello, undefined"
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>7.2 Object.hasOwn()</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>Object.hasOwn() 是 ES2022 引入的新方法，用于检查对象是否具有某个自有属性。
+    </div>
+
+    <h3>7.2.1 hasOwn() 与 hasOwnProperty() 的区别</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+const obj = {
+  name: "Alice",
+  age: 25
+};
+
+// hasOwnProperty() 方法
+console.log(obj.hasOwnProperty("name"));  // true
+console.log(obj.hasOwnProperty("toString"));  // false
+
+// Object.hasOwn() 方法（ES2022）
+console.log(Object.hasOwn(obj, "name"));  // true
+console.log(Object.hasOwn(obj, "toString"));  // false
+
+// 区别：处理 Object.create(null) 创建的对象
+const nullObj = Object.create(null);
+nullObj.name = "Alice";
+
+// hasOwnProperty 会报错
+// console.log(nullObj.hasOwnProperty("name"));  // TypeError
+
+// Object.hasOwn 不会报错
+console.log(Object.hasOwn(nullObj, "name"));  // true
+
+// 区别：处理继承的 hasOwnProperty 方法
+const parent = {
+  hasOwnProperty() {
+    return false;
+  },
+  name: "parent"
+};
+
+const child = Object.create(parent);
+
+// 调用的是被重写的 hasOwnProperty
+console.log(child.hasOwnProperty("name"));  // false（错误！）
+
+// Object.hasOwn 正确工作
+console.log(Object.hasOwn(child, "name"));  // false（child 没有自己的 name）
+      </pre>
+    </div>
+
+    <div class="warning">
+      <strong>建议：</strong>优先使用 Object.hasOwn() 而不是 hasOwnProperty()，因为它更安全、更可靠。
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>7.3 数组方法扩展</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>ES6 为数组添加了许多新的方法，使数组操作更加方便。
+    </div>
+
+    <h3>7.3.1 flat() - 数组扁平化</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// flat() - 将嵌套数组扁平化
+const arr = [1, 2, [3, 4, [5, 6]]];
+
+// 默认深度为 1
+const flat1 = arr.flat();
+console.log(flat1);  // [1, 2, 3, 4, [5, 6]]
+
+// 指定深度
+const flat2 = arr.flat(2);
+console.log(flat2);  // [1, 2, 3, 4, 5, 6]
+
+// 完全扁平化
+const deepArr = [1, [2, [3, [4, [5]]]]];
+const flatAll = deepArr.flat(Infinity);
+console.log(flatAll);  // [1, 2, 3, 4, 5]
+
+// 处理空位
+const arrWithEmpty = [1, 2, , 4, 5];
+const flatEmpty = arrWithEmpty.flat();
+console.log(flatEmpty);  // [1, 2, 4, 5]（空位被移除）
+      </pre>
+    </div>
+
+    <h3>7.3.2 flatMap() - 映射并扁平化</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// flatMap() - 先映射，再扁平化（深度为1）
+const arr = [1, 2, 3, 4, 5];
+
+// 等价于 map() + flat(1)
+const result1 = arr.flatMap(x => [x, x * 2]);
+console.log(result1);  // [1, 2, 2, 4, 3, 6, 4, 8, 5, 10]
+
+// 应用场景1：分割字符串
+const messages = ["hello world", "my name is Alice"];
+const words = messages.flatMap(msg => msg.split(" "));
+console.log(words);  // ["hello", "world", "my", "name", "is", "Alice"]
+
+// 应用场景2：过滤并映射
+const scores = [
+  { name: "Alice", score: 90 },
+  { name: "Bob", score: 60 },
+  { name: "Charlie", score: 75 }
+];
+
+const passedNames = scores
+  .filter(s => s.score >= 70)
+  .flatMap(s => s.name);
+console.log(passedNames);  // ["Alice", "Charlie"]
+
+// 应用场景3：移除空值
+const arrWithNulls = [1, null, 2, undefined, 3];
+const cleaned = arrWithNulls.flatMap(x => x != null ? [x] : []);
+console.log(cleaned);  // [1, 2, 3]
+      </pre>
+    </div>
+
+    <h3>7.3.3 at() - 获取指定位置的元素</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// at() - 支持负索引
+const arr = [1, 2, 3, 4, 5];
+
+// 正索引
+console.log(arr.at(0));   // 1
+console.log(arr.at(2));   // 3
+console.log(arr.at(10));  // undefined
+
+// 负索引
+console.log(arr.at(-1));  // 5（最后一个元素）
+console.log(arr.at(-2));  // 4（倒数第二个元素）
+console.log(arr.at(-10)); // undefined
+
+// 等价写法
+console.log(arr[arr.length - 1]);  // 5
+console.log(arr.at(-1));           // 5
+      </pre>
+    </div>
+
+    <h3>7.3.4 findLast() 和 findLastIndex()</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// findLast() - 从后往前查找满足条件的元素
+const arr = [1, 2, 3, 4, 5, 4, 3, 2, 1];
+
+const lastEven = arr.findLast(x => x % 2 === 0);
+console.log(lastEven);  // 2（最后一个偶数）
+
+// findLastIndex() - 从后往前查找满足条件的元素的索引
+const lastEvenIndex = arr.findLastIndex(x => x % 2 === 0);
+console.log(lastEvenIndex);  // 7
+
+// 对比 find() 和 findLast()
+const firstEven = arr.find(x => x % 2 === 0);
+console.log(firstEven);  // 2（第一个偶数）
+
+const firstEvenIndex = arr.findIndex(x => x % 2 === 0);
+console.log(firstEvenIndex);  // 1
+
+// 应用场景：查找最后一个符合条件的用户
+const users = [
+  { name: "Alice", age: 25 },
+  { name: "Bob", age: 30 },
+  { name: "Charlie", age: 35 },
+  { name: "David", age: 28 }
+];
+
+const lastYoungUser = users.findLast(user => user.age < 30);
+console.log(lastYoungUser);  // {name: "David", age: 28}
+      </pre>
+    </div>
+
+    <h3>7.3.5 数组去重方法总结</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+const arr = [1, 2, 3, 2, 1, 4, 5, 4];
+
+// 方法1：使用 Set
+const unique1 = [...new Set(arr)];
+console.log(unique1);  // [1, 2, 3, 4, 5]
+
+// 方法2：使用 filter + indexOf
+const unique2 = arr.filter((item, index) => arr.indexOf(item) === index);
+console.log(unique2);  // [1, 2, 3, 4, 5]
+
+// 方法3：使用 reduce
+const unique3 = arr.reduce((acc, cur) => {
+  if (!acc.includes(cur)) {
+    acc.push(cur);
+  }
+  return acc;
+}, []);
+console.log(unique3);  // [1, 2, 3, 4, 5]
+
+// 方法4：使用 Map
+function unique(arr) {
+  const map = new Map();
+  return arr.filter(item => !map.has(item) && map.set(item, true));
+}
+console.log(unique(arr));  // [1, 2, 3, 4, 5]
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>7.4 练习题</h2>
+    
+    <div class="example">
+      <strong>练习1：Object 方法</strong><br>
+      <pre>
+// 使用 Object 方法完成以下任务
+const user = {
+  name: "Alice",
+  age: 25,
+  city: "Beijing",
+  hobbies: ["reading", "coding"]
+};
+
+// 1. 获取所有键名
+// 2. 获取所有值
+// 3. 将对象转换为二维数组
+// 4. 将二维数组转换回对象
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习2：数组扁平化</strong><br>
+      <pre>
+// 使用 flat() 或 flatMap() 完成以下任务
+const arr = [1, [2, 3], [4, [5, 6]], 7];
+
+// 1. 将数组扁平化一层
+// 2. 将数组完全扁平化
+// 3. 将数组中的每个数字乘以2，然后扁平化
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习3：对象操作</strong><br>
+      <pre>
+// 实现一个函数，将对象中的所有字符串值转换为大写
+const obj = {
+  name: "alice",
+  age: 25,
+  address: {
+    city: "beijing",
+    street: "chaoyang"
+  }
+};
+
+function uppercaseStrings(obj) {
+  // 你的实现
+}
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>7.5 本章小结</h2>
+    
+    <div class="concept">
+      <strong>重点回顾：</strong>
+      <ul>
+        <li>Object.keys()、Object.values()、Object.entries() 用于获取对象的键、值、键值对</li>
+        <li>Object.fromEntries() 将键值对数组转换为对象</li>
+        <li>Object.assign() 用于合并对象和浅拷贝</li>
+        <li>Object.hasOwn() 比 hasOwnProperty() 更安全</li>
+        <li>flat() 用于数组扁平化，flatMap() 先映射再扁平化</li>
+        <li>at() 支持负索引，findLast() 和 findLastIndex() 从后往前查找</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="nav">
+    <a href="目录.html">目录</a>
+    <a href="第六章_数据结构.html">上一章</a>
+    <a href="第八章_面向对象进阶.html">下一章</a>
+  </div>
+
+  <script>
+    console.log("第七章：对象增强");
+    console.log("请打开浏览器控制台查看示例输出");
+  </script>
+</body>
+</html>

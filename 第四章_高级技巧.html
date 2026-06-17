@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第四章：高级技巧</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .section {
+      background: white;
+      margin: 20px 0;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 3px solid #27ae60;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #34495e;
+      border-left: 4px solid #27ae60;
+      padding-left: 15px;
+      margin-top: 30px;
+    }
+    h3 {
+      color: #7f8c8d;
+      margin-top: 25px;
+    }
+    .concept {
+      background: #e8f8f5;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #27ae60;
+    }
+    .example {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid #dee2e6;
+      font-family: 'Courier New', monospace;
+    }
+    .output {
+      background: #d4edda;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #c3e6cb;
+    }
+    .warning {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #ffeaa7;
+    }
+    .important {
+      background: #f8d7da;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #f5c6cb;
+    }
+    code {
+      background: #f1f2f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .diagram {
+      background: #e8f4fc;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 2px solid #3498db;
+      font-family: 'Courier New', monospace;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .comparison {
+      display: flex;
+      gap: 20px;
+      margin: 15px 0;
+    }
+    .comparison > div {
+      flex: 1;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .shallow {
+      background: #ffeaa7;
+      border: 2px solid #fdcb6e;
+    }
+    .deep {
+      background: #55efc4;
+      border: 2px solid #00b894;
+    }
+  </style>
+</head>
+<body>
+  <h1>第四章：高级技巧</h1>
+  
+  <div class="section">
+    <h2>4.1 深拷贝和浅拷贝</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>浅拷贝只复制对象的第一层属性，深拷贝递归复制所有层级的属性。
+    </div>
+
+    <h3>4.1.1 浅拷贝和深拷贝的区别</h3>
+    
+    <div class="comparison">
+      <div class="shallow">
+        <strong>浅拷贝（Shallow Copy）</strong><br>
+        只复制对象的第一层属性<br>
+        嵌套对象仍然是引用<br>
+        修改嵌套对象会影响原对象
+      </div>
+      <div class="deep">
+        <strong>深拷贝（Deep Copy）</strong><br>
+        递归复制所有层级的属性<br>
+        嵌套对象也是全新的副本<br>
+        修改嵌套对象不会影响原对象
+      </div>
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 浅拷贝示例
+const original = {
+  name: "Alice",
+  age: 25,
+  hobbies: ["reading", "coding"],
+  info: { city: "Beijing", zip: 100000 }
+};
+
+// 使用 Object.assign（浅拷贝）
+const shallowCopy = Object.assign({}, original);
+
+// 修改基本类型属性
+shallowCopy.name = "Bob";
+console.log(original.name);  // "Alice"（不受影响）
+
+// 修改嵌套对象（浅拷贝的问题）
+shallowCopy.info.city = "Shanghai";
+console.log(original.info.city);  // "Shanghai"（被影响了！）
+
+// 修改嵌套数组
+shallowCopy.hobbies.push("swimming");
+console.log(original.hobbies);  // ["reading", "coding", "swimming"]（被影响了！）
+      </pre>
+    </div>
+
+    <h3>4.1.2 浅拷贝的实现方式</h3>
+    
+    <div class="example">
+      <strong>1. Object.assign()</strong><br>
+      <pre>
+const original = { a: 1, b: { c: 2 } };
+const copy = Object.assign({}, original);
+console.log(copy);  // { a: 1, b: { c: 2 } }
+console.log(copy.b === original.b);  // true（浅拷贝）
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>2. 展开运算符（Spread Operator）</strong><br>
+      <pre>
+const original = { a: 1, b: { c: 2 } };
+const copy = { ...original };
+console.log(copy);  // { a: 1, b: { c: 2 } }
+console.log(copy.b === original.b);  // true（浅拷贝）
+
+// 数组浅拷贝
+const arr = [1, 2, [3, 4]];
+const arrCopy = [...arr];
+console.log(arrCopy[2] === arr[2]);  // true（浅拷贝）
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>3. Array.prototype.slice()</strong><br>
+      <pre>
+const arr = [1, 2, [3, 4]];
+const arrCopy = arr.slice();
+console.log(arrCopy);  // [1, 2, [3, 4]]
+console.log(arrCopy[2] === arr[2]);  // true（浅拷贝）
+      </pre>
+    </div>
+
+    <h3>4.1.3 深拷贝的实现</h3>
+    
+    <div class="example">
+      <strong>1. JSON.parse(JSON.stringify())</strong><br>
+      <pre>
+const original = {
+  name: "Alice",
+  age: 25,
+  hobbies: ["reading", "coding"],
+  info: { city: "Beijing", zip: 100000 }
+};
+
+const deepCopy = JSON.parse(JSON.stringify(original));
+
+// 修改嵌套对象
+deepCopy.info.city = "Shanghai";
+console.log(original.info.city);  // "Beijing"（不受影响）
+
+// 注意：JSON 方法的局限性
+const obj = {
+  date: new Date(),
+  regex: /test/gi,
+  func: function() {},
+  undefined: undefined,
+  null: null,
+  nan: NaN,
+  infinity: Infinity
+};
+
+const copy = JSON.parse(JSON.stringify(obj));
+console.log(copy);
+// {
+//   date: "2024-01-01T00:00:00.000Z",  // Date 变成了字符串
+//   regex: {},                          // RegExp 变成了空对象
+//   // func 丢失了                      // 函数丢失
+//   // undefined 丢失                   // undefined 丢失
+//   null: null,
+//   nan: null,                          // NaN 变成了 null
+//   infinity: null                      // Infinity 变成了 null
+// }
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>2. 递归实现深拷贝（基础版）</strong><br>
+      <pre>
+function deepClone(obj) {
+  // 基本类型和 null 直接返回
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+  
+  // 创建新的对象或数组
+  const clone = Array.isArray(obj) ? [] : {};
+  
+  // 递归复制所有属性
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      clone[key] = deepClone(obj[key]);
+    }
+  }
+  
+  return clone;
+}
+
+// 测试
+const original = {
+  name: "Alice",
+  hobbies: ["reading", "coding"],
+  info: { city: "Beijing" }
+};
+
+const copy = deepClone(original);
+copy.info.city = "Shanghai";
+console.log(original.info.city);  // "Beijing"（不受影响）
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>3. 完整版深拷贝（处理特殊情况）</strong><br>
+      <pre>
+function deepClone(obj, map = new WeakMap()) {
+  // 基本类型和 null 直接返回
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+  
+  // 处理日期
+  if (obj instanceof Date) {
+    return new Date(obj);
+  }
+  
+  // 处理正则
+  if (obj instanceof RegExp) {
+    return new RegExp(obj);
+  }
+  
+  // 处理循环引用
+  if (map.has(obj)) {
+    return map.get(obj);
+  }
+  
+  // 保持原型链
+  const clone = Array.isArray(obj) 
+    ? [] 
+    : Object.create(Object.getPrototypeOf(obj));
+  
+  // 记录已拷贝的对象（处理循环引用）
+  map.set(obj, clone);
+  
+  // 递归拷贝所有属性（包括 Symbol key）
+  for (const key of Reflect.ownKeys(obj)) {
+    const desc = Object.getOwnPropertyDescriptor(obj, key);
+    if (desc.get || desc.set) {
+      // 属性是 getter/setter，复制描述符
+      Object.defineProperty(clone, key, desc);
+    } else {
+      clone[key] = deepClone(obj[key], map);
+    }
+  }
+  
+  return clone;
+}
+
+// 测试
+const original = {
+  name: "Alice",
+  date: new Date(),
+  regex: /test/gi,
+  hobbies: ["reading", "coding"]
+};
+
+// 添加循环引用
+original.self = original;
+
+const copy = deepClone(original);
+console.log(copy === original);          // false
+console.log(copy.self === copy);         // true（循环引用正确）
+console.log(copy.date === original.date); // false
+console.log(copy.regex === original.regex); // false
+      </pre>
+    </div>
+
+    <h3>4.1.4 深拷贝的注意事项</h3>
+    
+    <div class="warning">
+      <strong>JSON 方法的局限性：</strong>
+      <ul>
+        <li>不能处理 Date 对象（会变成字符串）</li>
+        <li>不能处理 RegExp 对象（会变成空对象）</li>
+        <li>不能处理函数（会丢失）</li>
+        <li>不能处理 undefined（会丢失）</li>
+        <li>不能处理 NaN、Infinity（会变成 null）</li>
+        <li>不能处理循环引用（会报错）</li>
+        <li>不能处理 Map、Set 等新数据结构</li>
+      </ul>
+    </div>
+
+    <div class="important">
+      <strong>使用第三方库：</strong><br>
+      在生产环境中，建议使用成熟的第三方库，如 lodash 的 <code>_.cloneDeep()</code> 方法。
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4.2 圣杯模式（继承）</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>圣杯模式是一种实现继承的方式，可以避免共享原型的问题。
+    </div>
+
+    <h3>4.2.1 传统继承的问题</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 传统继承方式：直接赋值原型
+function Animal(name) {
+  this.name = name;
+}
+
+Animal.prototype.eat = function() {
+  console.log(this.name + " is eating");
+};
+
+function Dog(name, breed) {
+  Animal.call(this, name);
+  this.breed = breed;
+}
+
+// 问题：直接赋值原型会导致共享
+Dog.prototype = Animal.prototype;
+Dog.prototype.constructor = Dog;
+
+Dog.prototype.bark = function() {
+  console.log(this.name + " is barking");
+};
+
+const dog = new Dog("Buddy", "Golden Retriever");
+dog.bark();  // "Buddy is barking"
+
+// 问题：修改 Dog.prototype 会影响 Animal.prototype
+console.log(Animal.prototype.bark);  // function（Animal 也有 bark 方法了！）
+      </pre>
+    </div>
+
+    <h3>4.2.2 圣杯模式实现</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 圣杯模式：使用中间对象隔离原型
+function inherit(Target, Source) {
+  function F() {}
+  F.prototype = Source.prototype;
+  Target.prototype = new F();
+  Target.prototype.constructor = Target;
+  Target.prototype.super = Source.prototype;
+}
+
+// 使用示例
+function Animal(name) {
+  this.name = name;
+}
+
+Animal.prototype.eat = function() {
+  console.log(this.name + " is eating");
+};
+
+function Dog(name, breed) {
+  Animal.call(this, name);
+  this.breed = breed;
+}
+
+inherit(Dog, Animal);
+
+Dog.prototype.bark = function() {
+  console.log(this.name + " is barking");
+};
+
+const dog = new Dog("Buddy", "Golden Retriever");
+dog.eat();   // "Buddy is eating"
+dog.bark();  // "Buddy is barking"
+
+// 不会影响 Animal.prototype
+console.log(Animal.prototype.bark);  // undefined
+      </pre>
+    </div>
+
+    <h3>4.2.3 圣杯模式的优化</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 优化：使用闭包缓存中间对象
+var inherit = (function() {
+  var F = function() {};
+  return function(Target, Source) {
+    F.prototype = Source.prototype;
+    Target.prototype = new F();
+    Target.prototype.constructor = Target;
+    Target.prototype.super = Source.prototype;
+  };
+})();
+
+// 使用示例
+function Animal(name) {
+  this.name = name;
+}
+
+Animal.prototype.eat = function() {
+  console.log(this.name + " is eating");
+};
+
+function Dog(name, breed) {
+  Animal.call(this, name);
+  this.breed = breed;
+}
+
+inherit(Dog, Animal);
+
+Dog.prototype.bark = function() {
+  console.log(this.name + " is barking");
+};
+
+const dog = new Dog("Buddy", "Golden Retriever");
+dog.eat();   // "Buddy is eating"
+dog.bark();  // "Buddy is barking"
+      </pre>
+    </div>
+
+    <h3>4.2.4 ES6 的继承</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// ES6 的 class 继承
+class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+  
+  eat() {
+    console.log(this.name + " is eating");
+  }
+}
+
+class Dog extends Animal {
+  constructor(name, breed) {
+    super(name);  // 调用父类构造函数
+    this.breed = breed;
+  }
+  
+  bark() {
+    console.log(this.name + " is barking");
+  }
+}
+
+const dog = new Dog("Buddy", "Golden Retriever");
+dog.eat();   // "Buddy is eating"
+dog.bark();  // "Buddy is barking"
+
+console.log(dog instanceof Dog);    // true
+console.log(dog instanceof Animal); // true
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4.3 防抖和节流</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>防抖和节流是优化高频触发事件的技术，减少函数执行次数。
+    </div>
+
+    <h3>4.3.1 防抖（Debounce）</h3>
+    
+    <div class="diagram">
+防抖：在事件触发后等待一段时间，如果在这段时间内又触发了事件，则重新计时。
+
+触发事件：  ↓   ↓   ↓   ↓   ↓   ↓
+执行函数：              ✓
+
+适用场景：
+- 搜索框输入联想
+- 窗口大小调整
+- 按钮点击防止重复提交
+    </div>
+
+    <div class="example">
+      <strong>防抖实现：</strong><br>
+      <pre>
+function debounce(fn, delay, immediate = false) {
+  let timer = null;
+  
+  return function(...args) {
+    // 如果已经设置定时器，清除它
+    if (timer) {
+      clearTimeout(timer);
+    }
+    
+    if (immediate) {
+      // 立即执行版本：第一次触发时立即执行
+      const callNow = !timer;
+      timer = setTimeout(() => {
+        timer = null;
+      }, delay);
+      if (callNow) {
+        fn.apply(this, args);
+      }
+    } else {
+      // 延迟执行版本：最后一次触发后延迟执行
+      timer = setTimeout(() => {
+        fn.apply(this, args);
+        timer = null;
+      }, delay);
+    }
+  };
+}
+
+// 使用示例
+const searchInput = document.querySelector("#search");
+const search = debounce(function(value) {
+  console.log("搜索：", value);
+}, 300);
+
+searchInput.addEventListener("input", function(e) {
+  search(e.target.value);
+});
+      </pre>
+    </div>
+
+    <h3>4.3.2 节流（Throttle）</h3>
+    
+    <div class="diagram">
+节流：在一段时间内，无论触发多少次事件，函数只执行一次。
+
+触发事件：  ↓   ↓   ↓   ↓   ↓   ↓
+执行函数：  ✓       ✓       ✓
+
+适用场景：
+- 滚动事件处理
+- 鼠标移动事件
+- 游戏中的射击按钮
+    </div>
+
+    <div class="example">
+      <strong>节流实现：</strong><br>
+      <pre>
+function throttle(fn, delay, option = {}) {
+  let timer = null;
+  let previous = 0;
+  
+  const { leading = true, trailing = true } = option;
+  
+  return function(...args) {
+    const now = Date.now();
+    
+    if (!leading && previous === 0) {
+      previous = now;
+    }
+    
+    const remaining = delay - (now - previous);
+    
+    if (remaining <= 0) {
+      // 时间到了，执行函数
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      fn.apply(this, args);
+      previous = now;
+    } else if (!timer && trailing) {
+      // 设置定时器，在剩余时间后执行
+      timer = setTimeout(() => {
+        fn.apply(this, args);
+        previous = leading ? Date.now() : 0;
+        timer = null;
+      }, remaining);
+    }
+  };
+}
+
+// 使用示例
+const scrollHandler = throttle(function() {
+  console.log("处理滚动事件", Date.now());
+}, 1000);
+
+window.addEventListener("scroll", scrollHandler);
+      </pre>
+    </div>
+
+    <h3>4.3.3 防抖和节流的区别</h3>
+    
+    <div class="comparison">
+      <div class="shallow">
+        <strong>防抖（Debounce）</strong><br>
+        等待一段时间后执行<br>
+        如果期间又触发，重新计时<br>
+        适合：搜索框、窗口调整
+      </div>
+      <div class="deep">
+        <strong>节流（Throttle）</strong><br>
+        固定时间间隔执行一次<br>
+        无论触发多少次，只执行一次<br>
+        适合：滚动事件、鼠标移动
+      </div>
+    </div>
+
+    <h3>4.3.4 实际应用场景</h3>
+    
+    <div class="example">
+      <strong>1. 搜索框防抖</strong><br>
+      <pre>
+const searchInput = document.querySelector("#search");
+const searchResults = document.querySelector("#results");
+
+const search = debounce(async function(query) {
+  if (!query) {
+    searchResults.innerHTML = "";
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/api/search?q=${query}`);
+    const data = await response.json();
+    searchResults.innerHTML = data.map(item => 
+      `<div>${item.title}</div>`
+    ).join("");
+  } catch (error) {
+    console.error("搜索失败：", error);
+  }
+}, 300);
+
+searchInput.addEventListener("input", function(e) {
+  search(e.target.value);
+});
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>2. 滚动事件节流</strong><br>
+      <pre>
+const content = document.querySelector("#content");
+let isLoading = false;
+
+const checkScroll = throttle(function() {
+  if (isLoading) return;
+  
+  const { scrollTop, scrollHeight, clientHeight } = content;
+  
+  // 检查是否滚动到底部
+  if (scrollTop + clientHeight >= scrollHeight - 100) {
+    isLoading = true;
+    loadMoreData().finally(() => {
+      isLoading = false;
+    });
+  }
+}, 200);
+
+content.addEventListener("scroll", checkScroll);
+
+async function loadMoreData() {
+  console.log("加载更多数据...");
+  // 模拟加载
+  await new Promise(resolve => setTimeout(resolve, 1000));
+}
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>3. 按钮点击防抖</strong><br>
+      <pre>
+const submitButton = document.querySelector("#submit");
+
+const submit = debounce(async function() {
+  const formData = getFormData();
+  
+  try {
+    submitButton.disabled = true;
+    submitButton.textContent = "提交中...";
+    
+    await fetch("/api/submit", {
+      method: "POST",
+      body: JSON.stringify(formData)
+    });
+    
+    alert("提交成功！");
+  } catch (error) {
+    alert("提交失败：" + error.message);
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "提交";
+  }
+}, 1000, true);  // 立即执行
+
+submitButton.addEventListener("click", submit);
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4.4 预编译和执行上下文</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>JavaScript 代码执行前会进行预编译，创建执行上下文，确定变量和函数的提升。
+    </div>
+
+    <h3>4.4.1 执行上下文的类型</h3>
+    
+    <div class="example">
+      <strong>1. 全局执行上下文</strong><br>
+      <pre>
+// 全局执行上下文
+// 1. 创建全局对象（window 或 global）
+// 2. 将全局变量赋值给 window 对象的属性
+// 3. 将全局函数赋值给 window 对象的属性
+// 4. 将 this 指向全局对象
+
+var globalVar = "我是全局变量";
+function globalFunc() {
+  console.log("我是全局函数");
+}
+
+console.log(window.globalVar);      // "我是全局变量"
+console.log(window.globalFunc);     // function
+console.log(this === window);       // true
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>2. 函数执行上下文</strong><br>
+      <pre>
+// 函数执行上下文
+// 1. 创建活动对象（AO）
+// 2. 将函数参数和变量声明赋值给 AO 对象的属性，值为 undefined
+// 3. 实参和形参统一
+// 4. 将函数声明赋值给 AO 对象的属性
+// 5. 将 this 指向调用该函数的对象
+
+function test(a, b) {
+  console.log(a);  // function a() {}
+  console.log(b);  // undefined
+  
+  var b = 234;
+  console.log(b);  // 234
+  
+  a = 123;
+  console.log(a);  // 123
+  
+  function a() {}
+  var a;
+  
+  console.log(a);  // 123
+  console.log(b);  // 234
+}
+
+test(1);
+      </pre>
+    </div>
+
+    <h3>4.4.2 变量提升和函数提升</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 变量提升：变量声明会被提升到作用域顶部
+console.log(a);  // undefined
+var a = 10;
+console.log(a);  // 10
+
+// 等价于
+var a;
+console.log(a);  // undefined
+a = 10;
+console.log(a);  // 10
+
+// 函数提升：函数声明会被提升到作用域顶部
+console.log(fn);  // function fn() {}
+function fn() {
+  console.log("Hello");
+}
+
+// 函数表达式不会提升
+console.log(fn2);  // undefined
+var fn2 = function() {
+  console.log("Hello");
+};
+
+// let 和 const 不会提升（暂时性死区）
+// console.log(b);  // ReferenceError: Cannot access 'b' before initialization
+let b = 20;
+      </pre>
+    </div>
+
+    <h3>4.4.3 预编译的详细过程</h3>
+    
+    <div class="diagram">
+预编译过程（以函数为例）：
+
+function test(a, b) {
+  console.log(a);
+  console.log(b);
+  var b = 234;
+  console.log(b);
+  a = 123;
+  console.log(a);
+  function a() {}
+  var a;
+  console.log(a);
+  console.log(b);
+}
+test(1);
+
+第一步：创建 AO 对象（活动对象）
+AO = {}
+
+第二步：将参数和变量声明赋值给 AO，值为 undefined
+AO = {
+  a: undefined,
+  b: undefined
+}
+
+第三步：实参和形参统一
+AO = {
+  a: 1,
+  b: undefined
+}
+
+第四步：将函数声明赋值给 AO
+AO = {
+  a: function a() {},  // 函数声明覆盖参数
+  b: undefined
+}
+
+第五步：执行代码
+console.log(a);  // function a() {}
+console.log(b);  // undefined
+b = 234;
+console.log(b);  // 234
+a = 123;
+console.log(a);  // 123
+function a() {}  // 已经提升，跳过
+var a;           // 已经提升，跳过
+console.log(a);  // 123
+console.log(b);  // 234
+    </div>
+
+    <h3>4.4.4 作用域链和执行上下文</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+var x = 10;
+
+function outer() {
+  var y = 20;
+  
+  function inner() {
+    var z = 30;
+    console.log(x + y + z);  // 60
+  }
+  
+  inner();
+}
+
+outer();
+
+// 执行上下文栈：
+// 1. 全局执行上下文
+//    - 变量：x = 10
+//    - 函数：outer
+//    - this: window
+//
+// 2. outer 执行上下文
+//    - 变量：y = 20
+//    - 函数：inner
+//    - 作用域链：[outer AO, 全局 VO]
+//    - this: window
+//
+// 3. inner 执行上下文
+//    - 变量：z = 30
+//    - 作用域链：[inner AO, outer AO, 全局 VO]
+//    - this: window
+      </pre>
+    </div>
+
+    <h3>4.4.5 闭包和执行上下文</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+function createCounter() {
+  let count = 0;
+  
+  return {
+    increment() {
+      count++;
+      return count;
+    },
+    decrement() {
+      count--;
+      return count;
+    }
+  };
+}
+
+const counter = createCounter();
+console.log(counter.increment());  // 1
+console.log(counter.increment());  // 2
+console.log(counter.decrement());  // 1
+
+// 闭包的工作原理：
+// 1. createCounter 执行完毕后，其执行上下文从栈中弹出
+// 2. 但是 count 变量被返回的函数引用，所以不会被垃圾回收
+// 3. 返回的函数保持着对 createCounter 作用域的引用（闭包）
+// 4. 每次调用返回的函数，都能访问到 count 变量
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4.5 练习题</h2>
+    
+    <div class="example">
+      <strong>练习1：深拷贝实现</strong><br>
+      <pre>
+// 实现一个深拷贝函数，支持以下功能：
+// 1. 基本类型和 null
+// 2. 对象和数组
+// 3. Date 和 RegExp
+// 4. 循环引用
+// 5. Symbol 属性
+
+function deepClone(obj, map = new WeakMap()) {
+  // 你的实现
+}
+
+// 测试
+const original = {
+  name: "Alice",
+  date: new Date(),
+  regex: /test/gi,
+  hobbies: ["reading", "coding"],
+  info: { city: "Beijing" }
+};
+original.self = original;  // 循环引用
+
+const copy = deepClone(original);
+console.log(copy === original);          // false
+console.log(copy.self === copy);         // true
+console.log(copy.date === original.date); // false
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习2：防抖实现</strong><br>
+      <pre>
+// 实现一个防抖函数
+function debounce(fn, delay, immediate = false) {
+  // 你的实现
+}
+
+// 测试
+let count = 0;
+const debouncedFn = debounce(function() {
+  count++;
+  console.log("执行次数：", count);
+}, 1000);
+
+// 快速调用多次
+debouncedFn();
+debouncedFn();
+debouncedFn();
+// 只有最后一次会执行
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习3：节流实现</strong><br>
+      <pre>
+// 实现一个节流函数
+function throttle(fn, delay, option = {}) {
+  // 你的实现
+}
+
+// 测试
+let count = 0;
+const throttledFn = throttle(function() {
+  count++;
+  console.log("执行次数：", count);
+}, 1000);
+
+// 快速调用多次
+throttledFn();
+throttledFn();
+throttledFn();
+// 每秒只执行一次
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习4：预编译分析</strong><br>
+      <pre>
+// 分析以下代码的执行过程和输出
+function foo(a, b) {
+  console.log(a);
+  console.log(b);
+  var b = 234;
+  console.log(b);
+  a = 123;
+  console.log(a);
+  function a() {}
+  var a;
+  console.log(a);
+  console.log(b);
+}
+
+foo(1);
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4.6 本章小结</h2>
+    
+    <div class="concept">
+      <strong>重点回顾：</strong>
+      <ul>
+        <li>浅拷贝只复制第一层属性，深拷贝递归复制所有层级</li>
+        <li>JSON 方法有局限性，完整深拷贝需要处理特殊情况</li>
+        <li>圣杯模式使用中间对象隔离原型，避免共享问题</li>
+        <li>防抖：等待一段时间后执行，期间触发重新计时</li>
+        <li>节流：固定时间间隔执行一次，无论触发多少次</li>
+        <li>预编译会创建执行上下文，进行变量提升和函数提升</li>
+        <li>作用域链决定变量的查找顺序</li>
+      </ul>
+    </div>
+
+    <div class="concept">
+      <strong>下一章预览：</strong>
+      <ul>
+        <li>let/const</li>
+        <li>Set/Map</li>
+        <li>Symbol</li>
+        <li>Class</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    console.log("第四章：高级技巧");
+    console.log("请打开浏览器控制台查看示例输出");
+  </script>
+</body>
+</html>

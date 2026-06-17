@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第十二章：Promise 静态方法</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .section {
+      background: white;
+      margin: 20px 0;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 3px solid #8e44ad;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #34495e;
+      border-left: 4px solid #8e44ad;
+      padding-left: 15px;
+      margin-top: 30px;
+    }
+    h3 {
+      color: #7f8c8d;
+      margin-top: 25px;
+    }
+    .concept {
+      background: #f5eef8;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #8e44ad;
+    }
+    .example {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid #dee2e6;
+      font-family: 'Courier New', monospace;
+    }
+    .output {
+      background: #d4edda;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #c3e6cb;
+    }
+    .warning {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #ffeaa7;
+    }
+    code {
+      background: #f1f2f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .comparison {
+      display: flex;
+      gap: 20px;
+      margin: 15px 0;
+    }
+    .comparison > div {
+      flex: 1;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .col1 {
+      background: #ffeaa7;
+      border: 2px solid #fdcb6e;
+    }
+    .col2 {
+      background: #55efc4;
+      border: 2px solid #00b894;
+    }
+    .col3 {
+      background: #74b9ff;
+      border: 2px solid #0984e3;
+    }
+    .col4 {
+      background: #ff7675;
+      border: 2px solid #d63031;
+    }
+    .nav {
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: #ecf0f1;
+      border-radius: 8px;
+    }
+    .nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #3498db;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="目录.html">目录</a>
+    <a href="第十一章_Promise核心方法.html">上一章</a>
+  </div>
+
+  <h1>第十二章：Promise 静态方法</h1>
+  
+  <div class="section">
+    <h2>12.1 Promise.resolve() 和 Promise.reject()</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>Promise.resolve() 和 Promise.reject() 用于创建已确定状态的 Promise。
+    </div>
+
+    <h3>12.1.1 Promise.resolve()</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 1. 传入普通值：创建 fulfilled 状态的 Promise
+const p1 = Promise.resolve("成功");
+p1.then(value => console.log(value));  // "成功"
+
+// 等价于
+const p2 = new Promise(resolve => resolve("成功"));
+
+// 2. 传入 Promise：直接返回该 Promise
+const original = new Promise(resolve => setTimeout(() => resolve("原始"), 1000));
+const p3 = Promise.resolve(original);
+console.log(p3 === original);  // true
+
+// 3. 传入 thenable 对象：会执行 then 方法
+const thenable = {
+  then(resolve, reject) {
+    resolve("thenable 值");
+  }
+};
+const p4 = Promise.resolve(thenable);
+p4.then(value => console.log(value));  // "thenable 值"
+
+// 4. 应用场景：将值转换为 Promise
+function processValue(value) {
+  return Promise.resolve(value)
+    .then(v => v * 2)
+    .then(v => v + 10);
+}
+
+processValue(5).then(result => console.log(result));  // 20
+      </pre>
+    </div>
+
+    <h3>12.1.2 Promise.reject()</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 1. 创建 rejected 状态的 Promise
+const p1 = Promise.reject("失败原因");
+p1.catch(error => console.log(error));  // "失败原因"
+
+// 等价于
+const p2 = new Promise((resolve, reject) => reject("失败原因"));
+
+// 2. 传入的值会作为拒绝原因
+const p3 = Promise.reject(new Error("自定义错误"));
+p3.catch(error => console.log(error.message));  // "自定义错误"
+
+// 3. 注意：Promise.reject() 不会像 Promise.resolve() 那样处理 thenable
+const thenable = {
+  then(resolve, reject) {
+    reject("thenable 错误");
+  }
+};
+const p4 = Promise.reject(thenable);
+p4.catch(error => console.log(error === thenable));  // true
+
+// 4. 应用场景：快速返回错误
+function validateInput(input) {
+  if (!input) {
+    return Promise.reject(new Error("输入不能为空"));
+  }
+  return Promise.resolve(input);
+}
+
+validateInput("")
+  .catch(error => console.log(error.message));  // "输入不能为空"
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>12.2 Promise.all()</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>Promise.all() 接收一个 Promise 数组，所有 Promise 都成功时才返回成功，有一个失败就返回失败。
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 基本用法
+const p1 = Promise.resolve(1);
+const p2 = Promise.resolve(2);
+const p3 = Promise.resolve(3);
+
+Promise.all([p1, p2, p3])
+  .then(values => {
+    console.log(values);  // [1, 2, 3]
+  });
+
+// 有一个失败就返回失败
+const p4 = Promise.resolve(1);
+const p5 = Promise.reject("失败");
+const p6 = Promise.resolve(3);
+
+Promise.all([p4, p5, p6])
+  .then(values => {
+    console.log(values);
+  })
+  .catch(error => {
+    console.log(error);  // "失败"
+  });
+
+// 应用场景：并行请求多个接口
+function fetchUser(id) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve({ id, name: `User${id}` }), 1000);
+  });
+}
+
+Promise.all([fetchUser(1), fetchUser(2), fetchUser(3)])
+  .then(users => {
+    console.log(users);
+    // [{id: 1, name: "User1"}, {id: 2, name: "User2"}, {id: 3, name: "User3"}]
+  });
+
+// 注意：结果的顺序与输入的顺序一致
+const slow = new Promise(resolve => setTimeout(() => resolve("slow"), 3000));
+const fast = new Promise(resolve => setTimeout(() => resolve("fast"), 1000));
+
+Promise.all([slow, fast]).then(values => {
+  console.log(values);  // ["slow", "fast"]
+});
+      </pre>
+    </div>
+
+    <h3>12.2.1 Promise.all() 的特点</h3>
+    
+    <div class="comparison">
+      <div class="col1">
+        <strong>所有成功才成功</strong><br>
+        所有 Promise 都 fulfilled 时，返回的 Promise 才 fulfilled
+      </div>
+      <div class="col2">
+        <strong>有一个失败就失败</strong><br>
+        任意一个 Promise rejected 时，返回的 Promise 立即 rejected
+      </div>
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 处理部分失败的情况
+const p1 = Promise.resolve(1);
+const p2 = new Promise((resolve, reject) => {
+  setTimeout(() => reject("超时"), 1000);
+});
+const p3 = Promise.resolve(3);
+
+// 如果希望即使有失败也能获取成功的结果，可以使用 Promise.allSettled
+Promise.all([
+  p1.catch(error => null),
+  p2.catch(error => null),
+  p3.catch(error => null)
+]).then(values => {
+  console.log(values);  // [1, null, 3]
+});
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>12.3 Promise.allSettled()</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>Promise.allSettled() 等待所有 Promise 完成（无论成功或失败），返回每个 Promise 的结果。
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+const p1 = Promise.resolve(1);
+const p2 = Promise.reject("失败");
+const p3 = Promise.resolve(3);
+
+Promise.allSettled([p1, p2, p3])
+  .then(results => {
+    console.log(results);
+    // [
+    //   { status: "fulfilled", value: 1 },
+    //   { status: "rejected", reason: "失败" },
+    //   { status: "fulfilled", value: 3 }
+    // ]
+  });
+
+// 应用场景：获取所有请求的结果，无论成功失败
+const urls = [
+  "https://api.example.com/users/1",
+  "https://api.example.com/users/2",
+  "https://api.example.com/users/invalid"
+];
+
+const requests = urls.map(url => 
+  fetch(url)
+    .then(response => response.json())
+    .catch(error => ({ error: error.message }))
+);
+
+Promise.allSettled(requests)
+  .then(results => {
+    results.forEach((result, index) => {
+      if (result.status === "fulfilled") {
+        console.log(`请求 ${index} 成功:`, result.value);
+      } else {
+        console.log(`请求 ${index} 失败:`, result.reason);
+      }
+    });
+  });
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>12.4 Promise.race()</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>Promise.race() 返回第一个完成的 Promise 的结果（无论成功或失败）。
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 基本用法
+const p1 = new Promise(resolve => setTimeout(() => resolve("p1"), 3000));
+const p2 = new Promise(resolve => setTimeout(() => resolve("p2"), 1000));
+const p3 = new Promise(resolve => setTimeout(() => resolve("p3"), 2000));
+
+Promise.race([p1, p2, p3])
+  .then(value => {
+    console.log(value);  // "p2"（最先完成的）
+  });
+
+// 有一个失败就失败
+const p4 = new Promise((resolve, reject) => setTimeout(() => reject("错误"), 500));
+const p5 = new Promise(resolve => setTimeout(() => resolve("成功"), 1000));
+
+Promise.race([p4, p5])
+  .then(value => console.log(value))
+  .catch(error => console.log(error));  // "错误"
+
+// 应用场景：实现超时控制
+function timeout(ms) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => reject(new Error("超时")), ms);
+  });
+}
+
+function fetchWithTimeout(url, ms) {
+  return Promise.race([
+    fetch(url),
+    timeout(ms)
+  ]);
+}
+
+fetchWithTimeout("https://api.example.com/data", 5000)
+  .then(response => console.log(response))
+  .catch(error => console.log(error.message));  // 如果超时，输出 "超时"
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>12.5 Promise.any()</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>Promise.any() 返回第一个成功完成的 Promise 的结果，只有所有 Promise 都失败才返回失败。
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 基本用法
+const p1 = Promise.reject("错误1");
+const p2 = new Promise(resolve => setTimeout(() => resolve("成功"), 1000));
+const p3 = Promise.reject("错误3");
+
+Promise.any([p1, p2, p3])
+  .then(value => {
+    console.log(value);  // "成功"（第一个成功的）
+  });
+
+// 所有都失败才失败
+const p4 = Promise.reject("错误1");
+const p5 = Promise.reject("错误2");
+const p6 = Promise.reject("错误3");
+
+Promise.any([p4, p5, p6])
+  .then(value => console.log(value))
+  .catch(error => {
+    console.log(error);  // AggregateError: All promises were rejected
+    console.log(error.errors);  // ["错误1", "错误2", "错误3"]
+  });
+
+// 应用场景：从多个镜像服务器获取数据
+function fetchFromMirrors(urls) {
+  const requests = urls.map(url => fetch(url));
+  return Promise.any(requests);
+}
+
+const mirrors = [
+  "https://mirror1.example.com/data",
+  "https://mirror2.example.com/data",
+  "https://mirror3.example.com/data"
+];
+
+fetchFromMirrors(mirrors)
+  .then(response => console.log(response))
+  .catch(error => console.log(error));
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>12.6 Promise 静态方法对比</h2>
+    
+    <div class="comparison">
+      <div class="col1">
+        <strong>Promise.all()</strong><br>
+        所有成功才成功<br>
+        有一个失败就失败<br>
+        返回所有成功的结果数组
+      </div>
+      <div class="col2">
+        <strong>Promise.allSettled()</strong><br>
+        等待所有完成<br>
+        不会失败<br>
+        返回所有结果（含状态）
+      </div>
+      <div class="col3">
+        <strong>Promise.race()</strong><br>
+        第一个完成的结果<br>
+        无论成功或失败<br>
+        返回第一个完成的值
+      </div>
+      <div class="col4">
+        <strong>Promise.any()</strong><br>
+        第一个成功的结果<br>
+        全部失败才失败<br>
+        返回第一个成功的值
+      </div>
+    </div>
+
+    <div class="example">
+      <strong>对比示例：</strong><br>
+      <pre>
+const success1 = Promise.resolve("成功1");
+const success2 = new Promise(resolve => setTimeout(() => resolve("成功2"), 1000));
+const fail1 = Promise.reject("失败1");
+const fail2 = new Promise((resolve, reject) => setTimeout(() => reject("失败2"), 500));
+
+// Promise.all - 所有成功才成功
+Promise.all([success1, success2])
+  .then(values => console.log("all 成功:", values));  // ["成功1", "成功2"]
+Promise.all([success1, fail1])
+  .catch(error => console.log("all 失败:", error));  // "失败1"
+
+// Promise.allSettled - 等待所有完成
+Promise.allSettled([success1, fail1, success2])
+  .then(results => console.log("allSettled:", results));
+// [{status: "fulfilled", value: "成功1"}, {status: "rejected", reason: "失败1"}, ...]
+
+// Promise.race - 第一个完成
+Promise.race([success2, fail2])
+  .then(value => console.log("race 成功:", value))
+  .catch(error => console.log("race 失败:", error));  // "失败2"（500ms 后）
+
+// Promise.any - 第一个成功
+Promise.any([fail1, success1, success2])
+  .then(value => console.log("any 成功:", value));  // "成功1"
+Promise.any([fail1, fail2])
+  .catch(error => console.log("any 失败:", error.errors));
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>12.7 练习题</h2>
+    
+    <div class="example">
+      <strong>练习1：并行请求</strong><br>
+      <pre>
+// 使用 Promise.all 同时请求多个接口
+const urls = [
+  "/api/users/1",
+  "/api/users/2",
+  "/api/users/3"
+];
+
+// 你的实现
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习2：超时控制</strong><br>
+      <pre>
+// 使用 Promise.race 实现超时控制
+function fetchWithTimeout(url, timeout) {
+  // 你的实现
+}
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习3：容错请求</strong><br>
+      <pre>
+// 使用 Promise.any 从多个镜像服务器获取数据
+function fetchFromMirrors(urls) {
+  // 你的实现
+}
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>12.8 本章小结</h2>
+    
+    <div class="concept">
+      <strong>重点回顾：</strong>
+      <ul>
+        <li>Promise.resolve() 创建 fulfilled 状态的 Promise</li>
+        <li>Promise.reject() 创建 rejected 状态的 Promise</li>
+        <li>Promise.all() 所有成功才成功，有一个失败就失败</li>
+        <li>Promise.allSettled() 等待所有完成，不会失败</li>
+        <li>Promise.race() 返回第一个完成的结果</li>
+        <li>Promise.any() 返回第一个成功的结果，全部失败才失败</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="nav">
+    <a href="目录.html">目录</a>
+    <a href="第十一章_Promise核心方法.html">上一章</a>
+  </div>
+
+  <script>
+    console.log("第十二章：Promise 静态方法");
+    console.log("请打开浏览器控制台查看示例输出");
+  </script>
+</body>
+</html>

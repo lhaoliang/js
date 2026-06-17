@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第八章：面向对象进阶</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .section {
+      background: white;
+      margin: 20px 0;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 3px solid #1abc9c;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #34495e;
+      border-left: 4px solid #1abc9c;
+      padding-left: 15px;
+      margin-top: 30px;
+    }
+    h3 {
+      color: #7f8c8d;
+      margin-top: 25px;
+    }
+    .concept {
+      background: #e8f8f5;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #1abc9c;
+    }
+    .example {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid #dee2e6;
+      font-family: 'Courier New', monospace;
+    }
+    .output {
+      background: #d4edda;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #c3e6cb;
+    }
+    .warning {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #ffeaa7;
+    }
+    code {
+      background: #f1f2f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .nav {
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: #ecf0f1;
+      border-radius: 8px;
+    }
+    .nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #3498db;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="目录.html">目录</a>
+    <a href="第七章_对象增强.html">上一章</a>
+    <a href="第九章_错误处理.html">下一章</a>
+  </div>
+
+  <h1>第八章：面向对象进阶</h1>
+  
+  <div class="section">
+    <h2>8.1 Class 基础</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>Class 是 ES6 引入的面向对象编程的语法糖，让类的定义和继承更加清晰。
+    </div>
+
+    <h3>8.1.1 类的定义</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 类声明
+class Person {
+  // 构造函数
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+  
+  // 实例方法
+  sayHello() {
+    console.log(`Hello, I'm ${this.name}`);
+  }
+}
+
+const p1 = new Person("Alice", 25);
+console.log(p1);  // Person {name: "Alice", age: 25}
+p1.sayHello();    // "Hello, I'm Alice"
+
+// 类表达式
+const Animal = class {
+  constructor(name) {
+    this.name = name;
+  }
+  
+  speak() {
+    console.log(`${this.name} makes a sound`);
+  }
+};
+
+const dog = new Animal("Dog");
+dog.speak();  // "Dog makes a sound"
+
+// 类的本质是函数
+console.log(typeof Person);  // "function"
+console.log(Person === Person.prototype.constructor);  // true
+      </pre>
+    </div>
+
+    <h3>8.1.2 类的属性</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+class Person {
+  // 实例属性（公共）
+  height = 1.7;
+  
+  // 私有属性（ES2022）
+  #secret = "私有数据";
+  
+  // 静态属性
+  static species = "Human";
+  static #staticSecret = "静态私有数据";
+  
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+  
+  // 私有方法（ES2022）
+  #privateMethod() {
+    return this.#secret;
+  }
+  
+  getSecret() {
+    return this.#privateMethod();
+  }
+  
+  // 静态方法
+  static create(name, age) {
+    return new Person(name, age);
+  }
+}
+
+const p = new Person("Alice", 25);
+console.log(p.name);        // "Alice"
+console.log(p.height);      // 1.7
+console.log(p.getSecret()); // "私有数据"
+// console.log(p.#secret);  // SyntaxError: 私有属性不能直接访问
+
+console.log(Person.species);  // "Human"
+// console.log(Person.#staticSecret);  // SyntaxError
+
+const p2 = Person.create("Bob", 30);
+console.log(p2);  // Person {name: "Bob", age: 30, height: 1.7}
+      </pre>
+    </div>
+
+    <h3>8.1.3 静态代码块</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+class Database {
+  static connection;
+  
+  // 静态代码块（只执行一次）
+  static {
+    console.log("初始化数据库连接");
+    Database.connection = "connected";
+  }
+  
+  static query(sql) {
+    console.log(`执行查询: ${sql}`);
+    return Database.connection;
+  }
+}
+
+console.log(Database.connection);  // "connected"
+console.log(Database.query("SELECT * FROM users"));  // "执行查询: SELECT * FROM users"
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>8.2 类的继承</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>使用 extends 关键字实现类的继承，super 关键字调用父类。
+    </div>
+
+    <h3>8.2.1 基本继承</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 父类
+class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+  
+  speak() {
+    console.log(`${this.name} makes a sound`);
+  }
+}
+
+// 子类继承父类
+class Dog extends Animal {
+  constructor(name, breed) {
+    super(name);  // 调用父类构造函数
+    this.breed = breed;
+  }
+  
+  // 方法重写
+  speak() {
+    console.log(`${this.name} barks`);
+  }
+  
+  // 子类特有方法
+  fetch() {
+    console.log(`${this.name} fetches the ball`);
+  }
+}
+
+const dog = new Dog("Buddy", "Golden Retriever");
+dog.speak();   // "Buddy barks"
+dog.fetch();   // "Buddy fetches the ball"
+
+console.log(dog instanceof Dog);    // true
+console.log(dog instanceof Animal); // true
+      </pre>
+    </div>
+
+    <h3>8.2.2 super 关键字</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+class Parent {
+  constructor(name) {
+    this.name = name;
+  }
+  
+  greet() {
+    return `Hello, I'm ${this.name}`;
+  }
+}
+
+class Child extends Parent {
+  constructor(name, age) {
+    super(name);  // 调用父类构造函数（必须在使用 this 之前调用）
+    this.age = age;
+  }
+  
+  greet() {
+    const parentGreeting = super.greet();  // 调用父类方法
+    return `${parentGreeting} and I'm ${this.age} years old`;
+  }
+}
+
+const child = new Child("Alice", 25);
+console.log(child.greet());  // "Hello, I'm Alice and I'm 25 years old"
+      </pre>
+    </div>
+
+    <h3>8.2.3 继承内置类</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 继承 Array
+class CustomArray extends Array {
+  // 添加自定义方法
+  sum() {
+    return this.reduce((total, num) => total + num, 0);
+  }
+  
+  average() {
+    return this.sum() / this.length;
+  }
+}
+
+const arr = new CustomArray(1, 2, 3, 4, 5);
+console.log(arr.sum());      // 15
+console.log(arr.average());  // 3
+console.log(arr.filter(x => x > 3));  // CustomArray [4, 5]
+
+// 继承 Map
+class ObservableMap extends Map {
+  constructor() {
+    super();
+    this.listeners = [];
+  }
+  
+  set(key, value) {
+    super.set(key, value);
+    this.listeners.forEach(fn => fn(key, value));
+    return this;
+  }
+  
+  subscribe(fn) {
+    this.listeners.push(fn);
+  }
+}
+
+const obsMap = new ObservableMap();
+obsMap.subscribe((key, value) => {
+  console.log(`Map updated: ${key} = ${value}`);
+});
+
+obsMap.set("name", "Alice");  // "Map updated: name = Alice"
+obsMap.set("age", 25);        // "Map updated: age = 25"
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>8.3 Getter 和 Setter</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>使用 get 和 set 关键字定义属性的 getter 和 setter。
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+class Circle {
+  constructor(radius) {
+    this._radius = radius;
+  }
+  
+  // getter
+  get radius() {
+    return this._radius;
+  }
+  
+  // setter
+  set radius(value) {
+    if (value < 0) {
+      throw new Error("半径不能为负数");
+    }
+    this._radius = value;
+  }
+  
+  get area() {
+    return Math.PI * this._radius ** 2;
+  }
+  
+  get circumference() {
+    return 2 * Math.PI * this._radius;
+  }
+}
+
+const circle = new Circle(5);
+console.log(circle.radius);         // 5
+console.log(circle.area);           // 78.539...
+console.log(circle.circumference);  // 31.415...
+
+circle.radius = 10;
+console.log(circle.area);  // 314.159...
+
+// circle.radius = -1;  // Error: 半径不能为负数
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>8.4 Mixin 模式</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>Mixin 是一种实现多重继承的方式，通过组合多个对象的功能。
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 定义 Mixin
+const Serializable = {
+  serialize() {
+    return JSON.stringify(this);
+  }
+};
+
+const Loggable = {
+  log() {
+    console.log(`[${this.constructor.name}]`, this);
+  }
+};
+
+// 应用 Mixin
+class User {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+}
+
+// 将 Mixin 的方法添加到类的原型上
+Object.assign(User.prototype, Serializable, Loggable);
+
+const user = new User("Alice", 25);
+console.log(user.serialize());  // '{"name":"Alice","age":25}'
+user.log();  // [User] {name: "Alice", age: 25}
+
+// 使用函数式 Mixin
+function mixin(...mixins) {
+  return function(target) {
+    mixins.forEach(mixin => {
+      Object.getOwnPropertyNames(mixin).forEach(name => {
+        target.prototype[name] = mixin[name];
+      });
+    });
+    return target;
+  };
+}
+
+const Timestamped = {
+  getTimestamp() {
+    return new Date().toISOString();
+  }
+};
+
+@mixin(Serializable, Loggable, Timestamped)
+class Message {
+  constructor(content) {
+    this.content = content;
+  }
+}
+
+const msg = new Message("Hello");
+console.log(msg.getTimestamp());  // ISO 时间字符串
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>8.5 练习题</h2>
+    
+    <div class="example">
+      <strong>练习1：类的定义</strong><br>
+      <pre>
+// 创建一个 Rectangle 类
+// 包含 width 和 height 属性
+// 包含 area 和 perimeter getter
+// 包含 isSquare 方法
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习2：类的继承</strong><br>
+      <pre>
+// 创建一个 Shape 父类
+// 创建 Circle 和 Rectangle 子类
+// 每个子类都有 area 和 perimeter 方法
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习3：私有属性</strong><br>
+      <pre>
+// 创建一个 BankAccount 类
+// 使用私有属性存储余额
+// 提供 deposit、withdraw、getBalance 方法
+// 防止直接访问余额
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>8.6 本章小结</h2>
+    
+    <div class="concept">
+      <strong>重点回顾：</strong>
+      <ul>
+        <li>Class 是面向对象的语法糖，本质是函数</li>
+        <li>使用 constructor 定义构造函数</li>
+        <li>使用 # 定义私有属性和方法</li>
+        <li>使用 static 定义静态属性和方法</li>
+        <li>使用 extends 实现继承，super 调用父类</li>
+        <li>使用 get/set 定义属性的 getter 和 setter</li>
+        <li>Mixin 模式实现多重继承</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="nav">
+    <a href="目录.html">目录</a>
+    <a href="第七章_对象增强.html">上一章</a>
+    <a href="第九章_错误处理.html">下一章</a>
+  </div>
+
+  <script>
+    console.log("第八章：面向对象进阶");
+    console.log("请打开浏览器控制台查看示例输出");
+  </script>
+</body>
+</html>

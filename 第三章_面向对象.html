@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第三章：面向对象</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .section {
+      background: white;
+      margin: 20px 0;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 3px solid #9b59b6;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #34495e;
+      border-left: 4px solid #9b59b6;
+      padding-left: 15px;
+      margin-top: 30px;
+    }
+    h3 {
+      color: #7f8c8d;
+      margin-top: 25px;
+    }
+    .concept {
+      background: #f5eef8;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #9b59b6;
+    }
+    .example {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid #dee2e6;
+      font-family: 'Courier New', monospace;
+    }
+    .output {
+      background: #d4edda;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #c3e6cb;
+    }
+    .warning {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #ffeaa7;
+    }
+    .important {
+      background: #f8d7da;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #f5c6cb;
+    }
+    code {
+      background: #f1f2f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .diagram {
+      background: #e8f4fc;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 2px solid #3498db;
+      font-family: 'Courier New', monospace;
+      white-space: pre;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>第三章：面向对象</h1>
+  
+  <div class="section">
+    <h2>3.1 this 指向</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>this 的指向取决于函数的调用方式，而不是定义位置。
+    </div>
+
+    <h3>3.1.1 this 的绑定规则</h3>
+    
+    <div class="example">
+      <strong>1. 默认绑定</strong><br>
+      <pre>
+// 独立函数调用：this 指向全局对象（非严格模式）
+function sayHello() {
+  console.log(this);
+}
+
+sayHello();  // window（浏览器环境）或 global（Node.js环境）
+
+// 严格模式下：this 指向 undefined
+function sayHelloStrict() {
+  "use strict";
+  console.log(this);
+}
+
+sayHelloStrict();  // undefined
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>2. 隐式绑定</strong><br>
+      <pre>
+// 方法调用：this 指向调用该方法的对象
+const person = {
+  name: "Alice",
+  sayHello: function() {
+    console.log("Hello, I'm " + this.name);
+  }
+};
+
+person.sayHello();  // "Hello, I'm Alice"
+
+// 注意：隐式丢失
+const sayHello = person.sayHello;
+sayHello();  // "Hello, I'm undefined"（this 指向 window）
+
+// 函数作为参数传递时也会丢失
+function greet(fn) {
+  fn();
+}
+greet(person.sayHello);  // "Hello, I'm undefined"
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>3. 显式绑定</strong><br>
+      <pre>
+// 使用 call、apply、bind 显式指定 this
+function sayHello() {
+  console.log("Hello, I'm " + this.name);
+}
+
+const person1 = { name: "Alice" };
+const person2 = { name: "Bob" };
+
+// call：立即执行，参数逐个传递
+sayHello.call(person1);    // "Hello, I'm Alice"
+sayHello.call(person2);    // "Hello, I'm Bob"
+
+// apply：立即执行，参数以数组传递
+sayHello.apply(person1);   // "Hello, I'm Alice"
+sayHello.apply(person2);   // "Hello, I'm Bob"
+
+// bind：返回新函数，不立即执行
+const sayHelloToAlice = sayHello.bind(person1);
+sayHelloToAlice();         // "Hello, I'm Alice"
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>4. new 绑定</strong><br>
+      <pre>
+// 构造函数调用：this 指向新创建的实例对象
+function Person(name, age) {
+  this.name = name;
+  this.age = age;
+  console.log(this);
+}
+
+const p1 = new Person("Alice", 25);
+// Person { name: "Alice", age: 25 }
+
+const p2 = new Person("Bob", 30);
+// Person { name: "Bob", age: 30 }
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>5. 箭头函数</strong><br>
+      <pre>
+// 箭头函数：this 指向定义时外层作用域的 this
+const person = {
+  name: "Alice",
+  sayHello: function() {
+    // 箭头函数继承外层作用域的 this
+    const inner = () => {
+      console.log("Hello, I'm " + this.name);
+    };
+    inner();
+  }
+};
+
+person.sayHello();  // "Hello, I'm Alice"
+
+// 箭头函数不能通过 call/apply/bind 修改 this
+const person2 = { name: "Bob" };
+person.sayHello.call(person2);  // "Hello, I'm Alice"（仍然是 Alice）
+      </pre>
+    </div>
+
+    <h3>3.1.2 this 绑定优先级</h3>
+    
+    <div class="diagram">
+this 绑定优先级（从高到低）：
+
+1. new 绑定      → this = 新创建的对象
+2. 显式绑定      → this = 指定的对象（call/apply/bind）
+3. 隐式绑定      → this = 调用方法的对象
+4. 默认绑定      → this = 全局对象或 undefined
+
+判断流程：
+┌─────────────────────────────────────┐
+│ 函数是如何被调用的？                │
+├─────────────────────────────────────┤
+│ new 调用？                          │
+│   → 是：this = 新创建的对象         │
+│                                     │
+│ call / apply / bind 显式绑定？      │
+│   → 是：this = 指定的对象           │
+│                                     │
+│ 通过对象调用（obj.fn()）？          │
+│   → 是：this = 点前面的对象         │
+│                                     │
+│ 是箭头函数？                        │
+│   → 是：this = 定义时外层作用域的this│
+│                                     │
+│ 以上都不是：                        │
+│   → 严格模式：this = undefined      │
+│   → 非严格模式：this = 全局对象     │
+└─────────────────────────────────────┘
+    </div>
+
+    <h3>3.1.3 常见 this 问题</h3>
+    
+    <div class="example">
+      <strong>问题1：回调函数中的 this</strong><br>
+      <pre>
+const person = {
+  name: "Alice",
+  greet: function() {
+    setTimeout(function() {
+      console.log("Hello, I'm " + this.name);
+    }, 1000);
+  }
+};
+
+person.greet();  // "Hello, I'm undefined"（this 指向 window）
+
+// 解决方案1：使用箭头函数
+const person2 = {
+  name: "Alice",
+  greet: function() {
+    setTimeout(() => {
+      console.log("Hello, I'm " + this.name);
+    }, 1000);
+  }
+};
+
+person2.greet();  // "Hello, I'm Alice"
+
+// 解决方案2：使用 bind
+const person3 = {
+  name: "Alice",
+  greet: function() {
+    setTimeout(function() {
+      console.log("Hello, I'm " + this.name);
+    }.bind(this), 1000);
+  }
+};
+
+person3.greet();  // "Hello, I'm Alice"
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>问题2：事件处理函数中的 this</strong><br>
+      <pre>
+// 在事件处理函数中，this 指向触发事件的元素
+const button = document.querySelector("button");
+button.addEventListener("click", function() {
+  console.log(this);  // button 元素
+  console.log(this === button);  // true
+});
+
+// 使用箭头函数时，this 指向外层作用域
+button.addEventListener("click", () => {
+  console.log(this);  // window
+});
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3.2 call、apply、bind</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>call、apply、bind 用于显式绑定 this，改变函数的执行上下文。
+    </div>
+
+    <h3>3.2.1 call 方法</h3>
+    
+    <div class="example">
+      <strong>语法：</strong><br>
+      <code>function.call(thisArg, arg1, arg2, ...)</code>
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 基本用法
+function greet(greeting, punctuation) {
+  console.log(greeting + ", I'm " + this.name + punctuation);
+}
+
+const person = { name: "Alice" };
+
+greet.call(person, "Hello", "!");  // "Hello, I'm Alice!"
+
+// 借用方法
+const arrayLike = { 0: "a", 1: "b", 2: "c", length: 3 };
+const realArray = Array.prototype.slice.call(arrayLike);
+console.log(realArray);  // ["a", "b", "c"]
+
+// 继承构造函数
+function Animal(name) {
+  this.name = name;
+}
+
+function Dog(name, breed) {
+  Animal.call(this, name);  // 调用父构造函数
+  this.breed = breed;
+}
+
+const dog = new Dog("Buddy", "Golden Retriever");
+console.log(dog);  // Dog { name: "Buddy", breed: "Golden Retriever" }
+      </pre>
+    </div>
+
+    <h3>3.2.2 apply 方法</h3>
+    
+    <div class="example">
+      <strong>语法：</strong><br>
+      <code>function.apply(thisArg, [argsArray])</code>
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 基本用法
+function greet(greeting, punctuation) {
+  console.log(greeting + ", I'm " + this.name + punctuation);
+}
+
+const person = { name: "Alice" };
+
+greet.apply(person, ["Hello", "!"]);  // "Hello, I'm Alice!"
+
+// 求数组最大值
+const numbers = [1, 2, 3, 4, 5];
+const max = Math.max.apply(null, numbers);
+console.log(max);  // 5
+
+// 等价于
+const max2 = Math.max(...numbers);
+console.log(max2);  // 5
+
+// 合并数组
+const arr1 = [1, 2, 3];
+const arr2 = [4, 5, 6];
+Array.prototype.push.apply(arr1, arr2);
+console.log(arr1);  // [1, 2, 3, 4, 5, 6]
+      </pre>
+    </div>
+
+    <h3>3.2.3 bind 方法</h3>
+    
+    <div class="example">
+      <strong>语法：</strong><br>
+      <code>function.bind(thisArg, arg1, arg2, ...)</code>
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 基本用法
+function greet(greeting, punctuation) {
+  console.log(greeting + ", I'm " + this.name + punctuation);
+}
+
+const person = { name: "Alice" };
+
+// bind 返回新函数，不立即执行
+const greetAlice = greet.bind(person);
+greetAlice("Hello", "!");  // "Hello, I'm Alice!"
+
+// 部分应用（Partial Application）
+const greetHello = greet.bind(person, "Hello");
+greetHello("!");  // "Hello, I'm Alice!"
+greetHello("?");  // "Hello, I'm Alice?"
+
+// 在回调函数中使用
+const button = document.querySelector("button");
+const handler = {
+  name: "Alice",
+  handleClick: function() {
+    console.log("Clicked by " + this.name);
+  }
+};
+
+button.addEventListener("click", handler.handleClick.bind(handler));
+      </pre>
+    </div>
+
+    <h3>3.2.4 手动实现 call、apply、bind</h3>
+    
+    <div class="example">
+      <strong>实现 call：</strong><br>
+      <pre>
+Function.prototype.myCall = function(context, ...args) {
+  // 如果 context 为 null 或 undefined，则指向全局对象
+  context = context || window;
+  // 创建一个唯一的属性名，避免覆盖原有属性
+  const fnKey = Symbol();
+  // 将函数作为 context 的方法
+  context[fnKey] = this;
+  // 调用函数
+  const result = context[fnKey](...args);
+  // 删除临时方法
+  delete context[fnKey];
+  // 返回结果
+  return result;
+};
+
+// 测试
+function greet(greeting) {
+  console.log(greeting + ", I'm " + this.name);
+}
+
+const person = { name: "Alice" };
+greet.myCall(person, "Hello");  // "Hello, I'm Alice"
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>实现 apply：</strong><br>
+      <pre>
+Function.prototype.myApply = function(context, args = []) {
+  context = context || window;
+  const fnKey = Symbol();
+  context[fnKey] = this;
+  const result = context[fnKey](...args);
+  delete context[fnKey];
+  return result;
+};
+
+// 测试
+function greet(greeting, punctuation) {
+  console.log(greeting + ", I'm " + this.name + punctuation);
+}
+
+const person = { name: "Alice" };
+greet.myApply(person, ["Hello", "!"]);  // "Hello, I'm Alice!"
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>实现 bind：</strong><br>
+      <pre>
+Function.prototype.myBind = function(context, ...args) {
+  const fn = this;
+  return function(...args2) {
+    return fn.apply(context, [...args, ...args2]);
+  };
+};
+
+// 测试
+function greet(greeting, punctuation) {
+  console.log(greeting + ", I'm " + this.name + punctuation);
+}
+
+const person = { name: "Alice" };
+const greetAlice = greet.myBind(person, "Hello");
+greetAlice("!");  // "Hello, I'm Alice!"
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3.3 原型和原型链</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>原型是 JavaScript 实现继承的核心机制，原型链是对象属性查找的路径。
+    </div>
+
+    <h3>3.3.1 原型的基本概念</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 每个函数都有 prototype 属性
+function Person(name, age) {
+  this.name = name;
+  this.age = age;
+}
+
+// prototype 是一个对象
+console.log(typeof Person.prototype);  // "object"
+console.log(Person.prototype);  // { constructor: Person }
+
+// prototype 的 constructor 属性指向函数本身
+console.log(Person.prototype.constructor === Person);  // true
+
+// 实例对象的 __proto__ 指向构造函数的 prototype
+const p1 = new Person("Alice", 25);
+console.log(p1.__proto__ === Person.prototype);  // true
+
+// 实例对象可以访问原型上的方法
+Person.prototype.sayHello = function() {
+  console.log("Hello, I'm " + this.name);
+};
+
+p1.sayHello();  // "Hello, I'm Alice"
+      </pre>
+    </div>
+
+    <h3>3.3.2 原型链</h3>
+    
+    <div class="diagram">
+原型链关系图：
+
+Person (构造函数)
+  ├── prototype → Person.prototype
+  │                 ├── constructor → Person
+  │                 └── sayHello()
+  └── __proto__ → Function.prototype
+                    └── __proto__ → Object.prototype
+                                      └── __proto__ → null
+
+p1 (实例对象)
+  ├── name: "Alice"
+  ├── age: 25
+  └── __proto__ → Person.prototype
+                    ├── constructor → Person
+                    └── sayHello()
+
+属性查找顺序：
+p1.name → 直接在 p1 上找到
+p1.sayHello → 先在 p1 上找，没找到
+             → 去 Person.prototype 上找，找到了
+p1.toString → 先在 p1 上找，没找到
+             → 去 Person.prototype 上找，没找到
+             → 去 Object.prototype 上找，找到了
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+function Person(name) {
+  this.name = name;
+}
+
+Person.prototype.sayHello = function() {
+  console.log("Hello, I'm " + this.name);
+};
+
+const p1 = new Person("Alice");
+
+// 属性查找
+console.log(p1.name);        // "Alice"（实例属性）
+console.log(p1.sayHello);    // function（原型方法）
+console.log(p1.toString);    // function（Object.prototype 的方法）
+
+// 检查属性来源
+console.log(p1.hasOwnProperty("name"));      // true（实例属性）
+console.log(p1.hasOwnProperty("sayHello"));  // false（原型方法）
+console.log("sayHello" in p1);               // true（包括原型链）
+      </pre>
+    </div>
+
+    <h3>3.3.3 原型继承</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 父类
+function Animal(name) {
+  this.name = name;
+}
+
+Animal.prototype.eat = function() {
+  console.log(this.name + " is eating");
+};
+
+// 子类
+function Dog(name, breed) {
+  Animal.call(this, name);  // 继承属性
+  this.breed = breed;
+}
+
+// 继承方法
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog;
+
+// 子类特有方法
+Dog.prototype.bark = function() {
+  console.log(this.name + " is barking");
+};
+
+const dog = new Dog("Buddy", "Golden Retriever");
+dog.eat();   // "Buddy is eating"
+dog.bark();  // "Buddy is barking"
+
+console.log(dog instanceof Dog);    // true
+console.log(dog instanceof Animal); // true
+      </pre>
+    </div>
+
+    <h3>3.3.4 原型链的终点</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+function Person() {}
+const p = new Person();
+
+// 原型链的终点是 null
+console.log(p.__proto__);                          // Person.prototype
+console.log(p.__proto__.__proto__);                // Object.prototype
+console.log(p.__proto__.__proto__.__proto__);      // null
+
+// 所有对象都继承自 Object.prototype
+console.log(Person.prototype.__proto__ === Object.prototype);  // true
+
+// Object.prototype 的原型是 null
+console.log(Object.prototype.__proto__ === null);  // true
+
+// 函数也是对象
+console.log(Person.__proto__ === Function.prototype);  // true
+console.log(Function.prototype.__proto__ === Object.prototype);  // true
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3.4 instanceof 操作符</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>instanceof 用于检测构造函数的 prototype 是否出现在实例对象的原型链上。
+    </div>
+
+    <h3>3.4.1 instanceof 的使用</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+function Person(name) {
+  this.name = name;
+}
+
+const p1 = new Person("Alice");
+
+// instanceof 检查原型链
+console.log(p1 instanceof Person);  // true
+console.log(p1 instanceof Object);  // true
+
+// 字面量创建的对象
+const obj = {};
+console.log(obj instanceof Object);  // true
+
+const arr = [];
+console.log(arr instanceof Array);   // true
+console.log(arr instanceof Object);  // true
+
+// 基本数据类型
+const str = "Hello";
+console.log(str instanceof String);  // false
+
+const num = 123;
+console.log(num instanceof Number);  // false
+      </pre>
+    </div>
+
+    <h3>3.4.2 手动实现 instanceof</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+function myInstanceof(left, right) {
+  // 获取对象的原型
+  let proto = Object.getPrototypeOf(left);
+  // 获取构造函数的 prototype
+  const prototype = right.prototype;
+  
+  // 遍历原型链
+  while (proto !== null) {
+    if (proto === prototype) {
+      return true;
+    }
+    proto = Object.getPrototypeOf(proto);
+  }
+  
+  return false;
+}
+
+// 测试
+function Person() {}
+const p = new Person();
+
+console.log(myInstanceof(p, Person));  // true
+console.log(myInstanceof(p, Object));  // true
+console.log(myInstanceof({}, Person)); // false
+      </pre>
+    </div>
+
+    <h3>3.4.3 instanceof 的局限性</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 不能检测基本数据类型
+const str = "Hello";
+console.log(str instanceof String);  // false
+
+// 不能跨 iframe 检测
+// 在不同 iframe 中创建的 Array 实例，instanceof Array 可能返回 false
+
+// 替代方案：Object.prototype.toString.call()
+function getType(value) {
+  return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();
+}
+
+console.log(getType("Hello"));  // "string"
+console.log(getType(123));      // "number"
+console.log(getType([]));       // "array"
+console.log(getType({}));       // "object"
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3.5 对象和函数的关系</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>函数是对象的一种，对象是函数创建的实例。
+    </div>
+
+    <h3>3.5.1 函数是对象</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 函数是 Function 的实例
+function fn() {}
+console.log(fn instanceof Function);  // true
+console.log(fn instanceof Object);    // true
+
+// 函数可以拥有属性
+fn.myProperty = "Hello";
+console.log(fn.myProperty);  // "Hello"
+
+// 函数是对象，所以可以作为参数传递
+function execute(fn) {
+  fn();
+}
+
+execute(function() {
+  console.log("Hello");
+});
+
+// 函数可以作为返回值
+function createGreeter(name) {
+  return function() {
+    console.log("Hello, " + name);
+  };
+}
+
+const greeter = createGreeter("Alice");
+greeter();  // "Hello, Alice"
+      </pre>
+    </div>
+
+    <h3>3.5.2 对象是函数创建的</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 对象字面量
+const obj1 = { name: "Alice" };
+console.log(obj1 instanceof Object);  // true
+
+// 构造函数创建
+function Person(name) {
+  this.name = name;
+}
+const obj2 = new Person("Bob");
+console.log(obj2 instanceof Person);  // true
+console.log(obj2 instanceof Object);  // true
+
+// Object.create 创建
+const obj3 = Object.create({ name: "Charlie" });
+console.log(obj3 instanceof Object);  // true
+
+// 数组是函数创建的
+const arr = [1, 2, 3];
+console.log(arr instanceof Array);   // true
+console.log(arr instanceof Object);  // true
+      </pre>
+    </div>
+
+    <h3>3.5.3 内置构造函数</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// JavaScript 内置的构造函数
+console.log(Object);    // ƒ Object()
+console.log(Array);     // ƒ Array()
+console.log(Function);  // ƒ Function()
+console.log(String);    // ƒ String()
+console.log(Number);    // ƒ Number()
+console.log(Boolean);   // ƒ Boolean()
+console.log(Date);      // ƒ Date()
+console.log(RegExp);    // ƒ RegExp()
+console.log(Error);     // ƒ Error()
+
+// 所有内置构造函数都继承自 Function
+console.log(Object instanceof Function);    // true
+console.log(Array instanceof Function);     // true
+console.log(Function instanceof Function);  // true
+
+// Function 也是自己的实例
+console.log(Function instanceof Function);  // true
+
+// Object 是所有对象的祖先
+console.log(Object instanceof Object);  // true
+      </pre>
+    </div>
+
+    <h3>3.5.4 IIFE（立即执行函数）</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// IIFE：定义后立即执行的函数
+(function() {
+  console.log("IIFE 执行");
+})();
+
+// 带参数的 IIFE
+(function(name) {
+  console.log("Hello, " + name);
+})("Alice");
+
+// 返回值的 IIFE
+const result = (function(a, b) {
+  return a + b;
+})(1, 2);
+
+console.log(result);  // 3
+
+// 模块模式
+const calculator = (function() {
+  let result = 0;
+  
+  return {
+    add: function(x) {
+      result += x;
+      return this;
+    },
+    subtract: function(x) {
+      result -= x;
+      return this;
+    },
+    getResult: function() {
+      return result;
+    }
+  };
+})();
+
+calculator.add(5).subtract(2).add(3);
+console.log(calculator.getResult());  // 6
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3.6 练习题</h2>
+    
+    <div class="example">
+      <strong>练习1：this 指向</strong><br>
+      <pre>
+// 分析以下代码的 this 指向
+const obj = {
+  name: "Alice",
+  greet: function() {
+    console.log(this.name);
+  },
+  greetArrow: () => {
+    console.log(this.name);
+  }
+};
+
+obj.greet();          // ?
+obj.greetArrow();     // ?
+
+const greet = obj.greet;
+greet();              // ?
+
+obj.greet.call({ name: "Bob" });  // ?
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习2：原型链</strong><br>
+      <pre>
+// 分析以下代码的原型链关系
+function Animal(name) {
+  this.name = name;
+}
+
+Animal.prototype.eat = function() {
+  console.log(this.name + " is eating");
+};
+
+function Dog(name, breed) {
+  Animal.call(this, name);
+  this.breed = breed;
+}
+
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog;
+
+Dog.prototype.bark = function() {
+  console.log(this.name + " is barking");
+};
+
+const dog = new Dog("Buddy", "Golden Retriever");
+
+console.log(dog instanceof Dog);    // ?
+console.log(dog instanceof Animal); // ?
+console.log(dog instanceof Object); // ?
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习3：实现 bind</strong><br>
+      <pre>
+// 实现 Function.prototype.bind
+Function.prototype.myBind = function(context, ...args) {
+  // 你的实现
+};
+
+// 测试
+function greet(greeting, punctuation) {
+  console.log(greeting + ", I'm " + this.name + punctuation);
+}
+
+const person = { name: "Alice" };
+const greetAlice = greet.myBind(person, "Hello");
+greetAlice("!");  // 应该输出 "Hello, I'm Alice!"
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习4：对象创建</strong><br>
+      <pre>
+// 使用不同方式创建对象
+// 1. 对象字面量
+// 2. 构造函数
+// 3. Object.create
+// 4. class（ES6）
+
+// 分别创建一个 Person 对象，包含 name 和 sayHello 方法
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3.7 本章小结</h2>
+    
+    <div class="concept">
+      <strong>重点回顾：</strong>
+      <ul>
+        <li>this 的指向取决于函数的调用方式</li>
+        <li>this 绑定优先级：new > 显式 > 隐式 > 默认</li>
+        <li>call、apply、bind 用于显式绑定 this</li>
+        <li>原型是 JavaScript 实现继承的核心机制</li>
+        <li>原型链是对象属性查找的路径，终点是 null</li>
+        <li>instanceof 检测构造函数的 prototype 是否在原型链上</li>
+        <li>函数是对象的一种，对象是函数创建的实例</li>
+      </ul>
+    </div>
+
+    <div class="concept">
+      <strong>下一章预览：</strong>
+      <ul>
+        <li>深拷贝</li>
+        <li>圣杯模式（继承）</li>
+        <li>防抖和节流</li>
+        <li>预编译</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    console.log("第三章：面向对象");
+    console.log("请打开浏览器控制台查看示例输出");
+  </script>
+</body>
+</html>

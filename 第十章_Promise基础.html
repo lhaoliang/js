@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第十章：Promise 基础</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .section {
+      background: white;
+      margin: 20px 0;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 3px solid #2980b9;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #34495e;
+      border-left: 4px solid #2980b9;
+      padding-left: 15px;
+      margin-top: 30px;
+    }
+    h3 {
+      color: #7f8c8d;
+      margin-top: 25px;
+    }
+    .concept {
+      background: #eaf2f8;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #2980b9;
+    }
+    .example {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid #dee2e6;
+      font-family: 'Courier New', monospace;
+    }
+    .output {
+      background: #d4edda;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #c3e6cb;
+    }
+    .warning {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #ffeaa7;
+    }
+    code {
+      background: #f1f2f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .diagram {
+      background: #e8f4fc;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 2px solid #3498db;
+      font-family: 'Courier New', monospace;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .nav {
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: #ecf0f1;
+      border-radius: 8px;
+    }
+    .nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #3498db;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="目录.html">目录</a>
+    <a href="第九章_错误处理.html">上一章</a>
+    <a href="第十一章_Promise核心方法.html">下一章</a>
+  </div>
+
+  <h1>第十章：Promise 基础</h1>
+  
+  <div class="section">
+    <h2>10.1 异步编程的演进</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>Promise 是 ES6 引入的异步编程解决方案，解决了回调地狱问题。
+    </div>
+
+    <h3>10.1.1 回调函数的问题</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 1. 回调地狱
+function getUser(userId, callback) {
+  setTimeout(() => {
+    callback({ id: userId, name: "Alice" });
+  }, 1000);
+}
+
+function getOrders(userId, callback) {
+  setTimeout(() => {
+    callback([{ id: 1, product: "iPhone" }]);
+  }, 1000);
+}
+
+function getOrderDetails(orderId, callback) {
+  setTimeout(() => {
+    callback({ id: orderId, price: 999 });
+  }, 1000);
+}
+
+// 回调地狱：嵌套层级深，难以维护
+getUser(1, (user) => {
+  console.log(user);
+  getOrders(user.id, (orders) => {
+    console.log(orders);
+    getOrderDetails(orders[0].id, (details) => {
+      console.log(details);
+      // 继续嵌套...
+    });
+  });
+});
+
+// 2. 错误处理困难
+getUser(1, (user) => {
+  getOrders(user.id, (orders) => {
+    getOrderDetails(orders[0].id, (details) => {
+      // 每层都需要处理错误
+    }, (error) => {
+      console.log(error);
+    });
+  }, (error) => {
+    console.log(error);
+  });
+}, (error) => {
+  console.log(error);
+});
+      </pre>
+    </div>
+
+    <h3>10.1.2 Promise 的诞生</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 使用 Promise 解决回调地狱
+function getUser(userId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ id: userId, name: "Alice" });
+    }, 1000);
+  });
+}
+
+function getOrders(userId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([{ id: 1, product: "iPhone" }]);
+    }, 1000);
+  });
+}
+
+function getOrderDetails(orderId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ id: orderId, price: 999 });
+    }, 1000);
+  });
+}
+
+// 链式调用，清晰易读
+getUser(1)
+  .then(user => {
+    console.log(user);
+    return getOrders(user.id);
+  })
+  .then(orders => {
+    console.log(orders);
+    return getOrderDetails(orders[0].id);
+  })
+  .then(details => {
+    console.log(details);
+  })
+  .catch(error => {
+    // 统一错误处理
+    console.log(error);
+  });
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>10.2 Promise 的状态</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>Promise 有三种状态：pending（等待）、fulfilled（成功）、rejected（失败）。
+    </div>
+
+    <div class="diagram">
+Promise 状态转换：
+
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│   pending (等待状态)                                │
+│      │                                              │
+│      ├──── resolve(value) ───→ fulfilled (成功状态) │
+│      │                           │                  │
+│      │                           ↓                  │
+│      │                      value 不可变            │
+│      │                                              │
+│      └──── reject(reason) ──→ rejected (失败状态)   │
+│                                  │                  │
+│                                  ↓                  │
+│                             reason 不可变            │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+
+特点：
+1. 状态只能从 pending 变为 fulfilled 或 rejected
+2. 状态一旦确定，就不能再改变
+3. 状态改变时，会调用对应的回调函数
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 创建 Promise
+const promise = new Promise((resolve, reject) => {
+  // 立即执行的函数（executor）
+  console.log("executor 执行");
+  
+  // 模拟异步操作
+  setTimeout(() => {
+    const success = true;
+    if (success) {
+      resolve("成功的结果");  // 状态变为 fulfilled
+    } else {
+      reject("失败的原因");   // 状态变为 rejected
+    }
+  }, 1000);
+});
+
+console.log("Promise 创建完成");
+
+// 注册回调函数
+promise
+  .then(value => {
+    console.log("成功:", value);
+  })
+  .catch(error => {
+    console.log("失败:", error);
+  });
+
+// 输出顺序：
+// "executor 执行"
+// "Promise 创建完成"
+// "成功: 成功的结果"
+      </pre>
+    </div>
+
+    <h3>10.2.1 状态不可变</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 状态一旦确定，就不能再改变
+const promise = new Promise((resolve, reject) => {
+  resolve("第一次 resolve");
+  resolve("第二次 resolve");  // 无效
+  reject("reject");           // 无效
+});
+
+promise.then(value => {
+  console.log(value);  // "第一次 resolve"
+});
+
+// 在 resolve 之后抛出错误也无效
+const promise2 = new Promise((resolve, reject) => {
+  resolve("成功");
+  throw new Error("错误");  // 无效
+});
+
+promise2.then(value => {
+  console.log(value);  // "成功"
+});
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>10.3 Promise 的基本使用</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>使用 new Promise() 创建 Promise，通过 then/catch/finally 处理结果。
+    </div>
+
+    <h3>10.3.1 创建 Promise</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 基本创建
+const promise = new Promise((resolve, reject) => {
+  // 执行异步操作
+  setTimeout(() => {
+    const random = Math.random();
+    if (random > 0.5) {
+      resolve(random);
+    } else {
+      reject(new Error("随机数太小"));
+    }
+  }, 1000);
+});
+
+// 包装回调函数为 Promise
+function setTimeoutPromise(callback, delay) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(callback());
+    }, delay);
+  });
+}
+
+setTimeoutPromise(() => "Hello", 1000)
+  .then(value => console.log(value));  // "Hello"
+
+// 封装 Ajax 请求为 Promise
+function fetch(url) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.onload = () => resolve(xhr.responseText);
+    xhr.onerror = () => reject(new Error("请求失败"));
+    xhr.send();
+  });
+}
+      </pre>
+    </div>
+
+    <h3>10.3.2 处理 Promise 结果</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+const promise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve("成功");
+  }, 1000);
+});
+
+// 1. then() - 处理成功
+promise.then(value => {
+  console.log(value);  // "成功"
+});
+
+// 2. catch() - 处理失败
+promise.catch(error => {
+  console.log(error);
+});
+
+// 3. finally() - 无论成功失败都执行
+promise.finally(() => {
+  console.log("完成");
+});
+
+// 4. then() 可以接收两个参数
+promise.then(
+  value => console.log("成功:", value),
+  error => console.log("失败:", error)
+);
+
+// 5. 链式调用
+promise
+  .then(value => {
+    console.log(value);
+    return "下一步";
+  })
+  .then(value => {
+    console.log(value);
+    return "再下一步";
+  })
+  .then(value => {
+    console.log(value);
+  })
+  .catch(error => {
+    console.log(error);
+  });
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>10.4 练习题</h2>
+    
+    <div class="example">
+      <strong>练习1：创建 Promise</strong><br>
+      <pre>
+// 封装一个 delay 函数
+// 返回一个 Promise，在指定时间后 resolve
+function delay(ms) {
+  // 你的实现
+}
+
+// 使用
+delay(1000).then(() => console.log("1秒后执行"));
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习2：Promise 化回调函数</strong><br>
+      <pre>
+// 将 fs.readFile 回调函数转换为 Promise
+const fs = require("fs");
+
+function readFile(path) {
+  // 你的实现
+}
+
+readFile("./test.txt")
+  .then(data => console.log(data))
+  .catch(error => console.log(error));
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>10.5 本章小结</h2>
+    
+    <div class="concept">
+      <strong>重点回顾：</strong>
+      <ul>
+        <li>Promise 解决了回调地狱问题</li>
+        <li>Promise 有三种状态：pending、fulfilled、rejected</li>
+        <li>状态一旦确定，就不能再改变</li>
+        <li>使用 then/catch/finally 处理 Promise 结果</li>
+        <li>then() 返回新的 Promise，支持链式调用</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="nav">
+    <a href="目录.html">目录</a>
+    <a href="第九章_错误处理.html">上一章</a>
+    <a href="第十一章_Promise核心方法.html">下一章</a>
+  </div>
+
+  <script>
+    console.log("第十章：Promise 基础");
+    console.log("请打开浏览器控制台查看示例输出");
+  </script>
+</body>
+</html>

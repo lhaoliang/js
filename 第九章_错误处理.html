@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第九章：错误处理</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .section {
+      background: white;
+      margin: 20px 0;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 3px solid #c0392b;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #34495e;
+      border-left: 4px solid #c0392b;
+      padding-left: 15px;
+      margin-top: 30px;
+    }
+    h3 {
+      color: #7f8c8d;
+      margin-top: 25px;
+    }
+    .concept {
+      background: #fdedec;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #c0392b;
+    }
+    .example {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid #dee2e6;
+      font-family: 'Courier New', monospace;
+    }
+    .output {
+      background: #d4edda;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #c3e6cb;
+    }
+    .warning {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #ffeaa7;
+    }
+    code {
+      background: #f1f2f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .nav {
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: #ecf0f1;
+      border-radius: 8px;
+    }
+    .nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #3498db;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="目录.html">目录</a>
+    <a href="第八章_面向对象进阶.html">上一章</a>
+    <a href="第十章_Promise基础.html">下一章</a>
+  </div>
+
+  <h1>第九章：错误处理</h1>
+  
+  <div class="section">
+    <h2>9.1 错误类型</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>JavaScript 有多种内置错误类型，用于表示不同类型的错误。
+    </div>
+
+    <h3>9.1.1 内置错误类型</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 1. Error - 基础错误类型
+const error = new Error("发生错误");
+console.log(error.message);  // "发生错误"
+console.log(error.name);     // "Error"
+console.log(error.stack);    // 错误堆栈信息
+
+// 2. TypeError - 类型错误
+try {
+  null.method();
+} catch (e) {
+  console.log(e instanceof TypeError);  // true
+  console.log(e.message);  // "null.method is not a function"
+}
+
+// 3. ReferenceError - 引用错误
+try {
+  console.log(undefinedVariable);
+} catch (e) {
+  console.log(e instanceof ReferenceError);  // true
+  console.log(e.message);  // "undefinedVariable is not defined"
+}
+
+// 4. SyntaxError - 语法错误
+try {
+  eval("const a = ;");
+} catch (e) {
+  console.log(e instanceof SyntaxError);  // true
+}
+
+// 5. RangeError - 范围错误
+try {
+  const arr = new Array(-1);
+} catch (e) {
+  console.log(e instanceof RangeError);  // true
+}
+
+// 6. URIError - URI 错误
+try {
+  decodeURIComponent("%");
+} catch (e) {
+  console.log(e instanceof URIError);  // true
+}
+
+// 7. EvalError - Eval 错误
+// 较少使用，eval 函数执行错误时抛出
+      </pre>
+    </div>
+
+    <h3>9.1.2 自定义错误类型</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 自定义错误类
+class ValidationError extends Error {
+  constructor(message, field) {
+    super(message);
+    this.name = "ValidationError";
+    this.field = field;
+  }
+}
+
+class NotFoundError extends Error {
+  constructor(resource, id) {
+    super(`${resource} with id ${id} not found`);
+    this.name = "NotFoundError";
+    this.resource = resource;
+    this.id = id;
+  }
+}
+
+// 使用自定义错误
+function validateAge(age) {
+  if (typeof age !== "number") {
+    throw new ValidationError("年龄必须是数字", "age");
+  }
+  if (age < 0 || age > 150) {
+    throw new ValidationError("年龄必须在 0-150 之间", "age");
+  }
+  return true;
+}
+
+try {
+  validateAge(-5);
+} catch (e) {
+  if (e instanceof ValidationError) {
+    console.log(`验证错误: ${e.message}, 字段: ${e.field}`);
+    // "验证错误: 年龄必须在 0-150 之间, 字段: age"
+  }
+}
+
+function findUser(id) {
+  // 模拟用户不存在
+  throw new NotFoundError("User", id);
+}
+
+try {
+  findUser(123);
+} catch (e) {
+  if (e instanceof NotFoundError) {
+    console.log(`${e.resource} 不存在，ID: ${e.id}`);
+    // "User 不存在，ID: 123"
+  }
+}
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>9.2 错误处理机制</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>使用 try...catch...finally 语句处理错误。
+    </div>
+
+    <h3>9.2.1 try...catch 基础</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 基本语法
+try {
+  // 可能发生错误的代码
+  const result = someUndefinedFunction();
+} catch (error) {
+  // 处理错误
+  console.log("捕获到错误:", error.message);
+} finally {
+  // 无论是否发生错误都会执行
+  console.log("finally 块执行");
+}
+
+// 输出：
+// "捕获到错误: someUndefinedFunction is not defined"
+// "finally 块执行"
+      </pre>
+    </div>
+
+    <h3>9.2.2 错误捕获的最佳实践</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 1. 精确捕获特定错误
+function parseJSON(str) {
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    if (e instanceof SyntaxError) {
+      console.log("JSON 语法错误:", e.message);
+      return null;
+    }
+    throw e;  // 其他错误继续抛出
+  }
+}
+
+// 2. 异步错误处理
+async function fetchData(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.log("请求失败:", error.message);
+    throw error;  // 可以选择继续抛出或返回默认值
+  }
+}
+
+// 3. 错误边界
+function safeExecute(fn) {
+  try {
+    return { success: true, data: fn() };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+const result1 = safeExecute(() => JSON.parse('{"a": 1}'));
+console.log(result1);  // {success: true, data: {a: 1}}
+
+const result2 = safeExecute(() => JSON.parse("invalid"));
+console.log(result2);  // {success: false, error: "Unexpected token i in JSON at position 0"}
+      </pre>
+    </div>
+
+    <h3>9.2.3 throw 语句</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 抛出错误
+function divide(a, b) {
+  if (b === 0) {
+    throw new Error("除数不能为零");
+  }
+  return a / b;
+}
+
+try {
+  divide(10, 0);
+} catch (e) {
+  console.log(e.message);  // "除数不能为零"
+}
+
+// 抛出任意值
+function throwError() {
+  throw "这是一个字符串错误";
+  throw 42;
+  throw { code: 404, message: "Not Found" };
+}
+
+// 重新抛出错误
+function processFile(filename) {
+  try {
+    // 处理文件
+    if (!filename) {
+      throw new Error("文件名不能为空");
+    }
+  } catch (e) {
+    console.log("处理文件时出错:", e.message);
+    throw e;  // 重新抛出，让调用者处理
+  }
+}
+
+try {
+  processFile("");
+} catch (e) {
+  console.log("上层捕获:", e.message);
+}
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>9.3 FinalizationRegistry</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>FinalizationRegistry 是 ES2021 引入的 API，用于在对象被垃圾回收时执行清理操作。
+    </div>
+
+    <h3>9.3.1 FinalizationRegistry 的使用</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 创建 FinalizationRegistry 实例
+const registry = new FinalizationRegistry((heldValue) => {
+  console.log("对象被垃圾回收了:", heldValue);
+});
+
+// 注册对象
+let obj = { name: "Alice" };
+registry.register(obj, "Alice 对象");
+
+// 当 obj 不再被引用时，垃圾回收器会回收它
+// 然后 FinalizationRegistry 的回调函数会被调用
+obj = null;  // 现在 obj 可以被垃圾回收
+
+// 注意：垃圾回收的时间是不确定的
+// 可能需要等待一段时间才会看到回调执行
+      </pre>
+    </div>
+
+    <h3>9.3.2 WeakRef</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// WeakRef - 弱引用
+let obj = { name: "Alice" };
+const weakRef = new WeakRef(obj);
+
+console.log(weakRef.deref());  // {name: "Alice"}
+
+// 使用弱引用
+obj = null;  // 原对象可以被垃圾回收
+
+// 检查对象是否还存在
+setTimeout(() => {
+  const cached = weakRef.deref();
+  if (cached) {
+    console.log("对象仍然存在:", cached);
+  } else {
+    console.log("对象已被垃圾回收");
+  }
+}, 1000);
+
+// 应用场景：缓存
+class WeakCache {
+  constructor() {
+    this.cache = new Map();
+    this.registry = new FinalizationRegistry((key) => {
+      console.log("缓存项被回收:", key);
+      this.cache.delete(key);
+    });
+  }
+  
+  set(key, value) {
+    const weakRef = new WeakRef(value);
+    this.cache.set(key, weakRef);
+    this.registry.register(value, key);
+  }
+  
+  get(key) {
+    const weakRef = this.cache.get(key);
+    if (weakRef) {
+      return weakRef.deref();
+    }
+    return undefined;
+  }
+}
+
+const cache = new WeakCache();
+let data = { id: 1, name: "Test" };
+cache.set("key1", data);
+console.log(cache.get("key1"));  // {id: 1, name: "Test"}
+
+data = null;  // data 可以被垃圾回收
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>9.4 练习题</h2>
+    
+    <div class="example">
+      <strong>练习1：自定义错误</strong><br>
+      <pre>
+// 创建一个 ValidationError 类
+// 包含 message 和 errors 数组
+// 用于表单验证
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习2：错误处理</strong><br>
+      <pre>
+// 实现一个 safeJsonParse 函数
+// 能够安全地解析 JSON 字符串
+// 返回 { success: boolean, data?: any, error?: string }
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习3：错误重试</strong><br>
+      <pre>
+// 实现一个 retry 函数
+// 能够在失败时自动重试指定次数
+async function retry(fn, maxRetries = 3) {
+  // 你的实现
+}
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>9.5 本章小结</h2>
+    
+    <div class="concept">
+      <strong>重点回顾：</strong>
+      <ul>
+        <li>JavaScript 有多种内置错误类型：Error、TypeError、ReferenceError 等</li>
+        <li>可以使用 extends 创建自定义错误类</li>
+        <li>try...catch...finally 用于错误处理</li>
+        <li>throw 语句用于抛出错误</li>
+        <li>FinalizationRegistry 用于对象被垃圾回收时的清理</li>
+        <li>WeakRef 提供弱引用，不阻止垃圾回收</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="nav">
+    <a href="目录.html">目录</a>
+    <a href="第八章_面向对象进阶.html">上一章</a>
+    <a href="第十章_Promise基础.html">下一章</a>
+  </div>
+
+  <script>
+    console.log("第九章：错误处理");
+    console.log("请打开浏览器控制台查看示例输出");
+  </script>
+</body>
+</html>

@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第二章：函数核心</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .section {
+      background: white;
+      margin: 20px 0;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 3px solid #e74c3c;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #34495e;
+      border-left: 4px solid #e74c3c;
+      padding-left: 15px;
+      margin-top: 30px;
+    }
+    h3 {
+      color: #7f8c8d;
+      margin-top: 25px;
+    }
+    .concept {
+      background: #fde8e8;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #e74c3c;
+    }
+    .example {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid #dee2e6;
+      font-family: 'Courier New', monospace;
+    }
+    .output {
+      background: #d4edda;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #c3e6cb;
+    }
+    .warning {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #ffeaa7;
+    }
+    .important {
+      background: #f8d7da;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #f5c6cb;
+    }
+    code {
+      background: #f1f2f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .diagram {
+      background: #e8f4fc;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 2px solid #3498db;
+      font-family: 'Courier New', monospace;
+      white-space: pre;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>第二章：函数核心</h1>
+  
+  <div class="section">
+    <h2>2.1 函数对象和实例对象</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>函数在 JavaScript 中既是函数也是对象，函数对象可以创建实例对象。
+    </div>
+
+    <h3>2.1.1 函数是对象</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 函数是对象的一种
+function Person(name, age) {
+  this.name = name;
+  this.age = age;
+}
+
+// 函数对象有属性和方法
+Person.prototype.sayHello = function() {
+  console.log("Hello, I'm " + this.name);
+};
+
+// 函数可以添加属性
+Person.species = "Human";
+console.log(Person.species);  // "Human"
+
+// 函数是 Function 的实例
+console.log(Person instanceof Function);  // true
+console.log(typeof Person);  // "function"
+      </pre>
+    </div>
+
+    <div class="output">
+      <strong>输出结果：</strong><br>
+      "Human"<br>
+      true<br>
+      "function"
+    </div>
+
+    <h3>2.1.2 实例对象</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 使用 new 操作符创建实例对象
+function Person(name, age) {
+  this.name = name;
+  this.age = age;
+}
+
+Person.prototype.sayHello = function() {
+  console.log("Hello, I'm " + this.name);
+};
+
+const p1 = new Person("Alice", 25);
+const p2 = new Person("Bob", 30);
+
+console.log(p1);  // Person { name: "Alice", age: 25 }
+console.log(p2);  // Person { name: "Bob", age: 30 }
+
+// 实例对象可以访问原型上的方法
+p1.sayHello();  // "Hello, I'm Alice"
+p2.sayHello();  // "Hello, I'm Bob"
+
+// 实例对象是构造函数的实例
+console.log(p1 instanceof Person);  // true
+console.log(p2 instanceof Person);  // true
+      </pre>
+    </div>
+
+    <div class="output">
+      <strong>输出结果：</strong><br>
+      Person { name: "Alice", age: 25 }<br>
+      Person { name: "Bob", age: 30 }<br>
+      "Hello, I'm Alice"<br>
+      "Hello, I'm Bob"<br>
+      true<br>
+      true
+    </div>
+
+    <h3>2.1.3 函数对象与实例对象的关系</h3>
+    
+    <div class="diagram">
+函数对象（Constructor）          实例对象（Instance）
+        |                              |
+        | new Person("Alice", 25)      |
+        | ---------------------------> |
+        |                              |
+        | Person.prototype             | __proto__
+        | <--------------------------- |
+        |                              |
+        
+Person (函数对象)
+  ├── prototype → Person.prototype
+  │                 ├── constructor → Person
+  │                 └── sayHello()
+  └── __proto__ → Function.prototype
+
+p1 (实例对象)
+  ├── name: "Alice"
+  ├── age: 25
+  └── __proto__ → Person.prototype
+                    ├── constructor → Person
+                    └── sayHello()
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2.2 作用域和作用域链</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>作用域是变量的可访问范围，作用域链是变量查找的路径。
+    </div>
+
+    <h3>2.2.1 作用域类型</h3>
+    
+    <div class="example">
+      <strong>1. 全局作用域</strong><br>
+      <pre>
+// 全局作用域中的变量
+var globalVar = "我是全局变量";
+let globalLet = "我也是全局变量";
+
+console.log(globalVar);  // "我是全局变量"
+console.log(globalLet);  // "我也是全局变量"
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>2. 函数作用域</strong><br>
+      <pre>
+function outer() {
+  var outerVar = "我是外层函数的变量";
+  
+  function inner() {
+    var innerVar = "我是内层函数的变量";
+    console.log(outerVar);  // 可以访问外层变量
+    console.log(innerVar);  // 可以访问内层变量
+  }
+  
+  inner();
+  // console.log(innerVar);  // 报错：innerVar is not defined
+}
+
+outer();
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>3. 块级作用域（ES6+）</strong><br>
+      <pre>
+{
+  var a = "var 没有块级作用域";
+  let b = "let 有块级作用域";
+  const c = "const 有块级作用域";
+}
+
+console.log(a);  // "var 没有块级作用域"
+// console.log(b);  // 报错：b is not defined
+// console.log(c);  // 报错：c is not defined
+      </pre>
+    </div>
+
+    <h3>2.2.2 作用域链</h3>
+    
+    <div class="example">
+      <strong>作用域链查找规则：</strong><br>
+      <pre>
+var name = "全局 name";
+
+function first() {
+  var name = "first 的 name";
+  
+  function second() {
+    var name = "second 的 name";
+    console.log("在 second 中:", name);  // "second 的 name"
+  }
+  
+  second();
+  console.log("在 first 中:", name);  // "first 的 name"
+}
+
+first();
+console.log("在全局中:", name);  // "全局 name"
+      </pre>
+    </div>
+
+    <div class="output">
+      <strong>输出结果：</strong><br>
+      "在 second 中: second 的 name"<br>
+      "在 first 中: first 的 name"<br>
+      "在全局中: 全局 name"
+    </div>
+
+    <div class="diagram">
+作用域链查找顺序：
+        
+当前作用域 → 外层作用域 → ... → 全局作用域
+        
+示例：
+function outer() {
+  var a = 10;
+  function inner() {
+    var b = 20;
+    console.log(a);  // 先在 inner 中找 a，没找到
+                     // 去 outer 中找 a，找到了
+    console.log(c);  // 先在 inner 中找 c，没找到
+                     // 去 outer 中找 c，没找到
+                     // 去全局中找 c，没找到 → 报错
+  }
+}
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2.3 闭包</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>闭包是指函数可以访问其外部作用域中的变量，即使外部函数已经执行完毕。
+    </div>
+
+    <h3>2.3.1 闭包的形成</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+function outer() {
+  var count = 0;
+  
+  function inner() {
+    count++;
+    console.log(count);
+  }
+  
+  return inner;
+}
+
+var counter = outer();
+counter();  // 1
+counter();  // 2
+counter();  // 3
+
+// 即使 outer 函数已经执行完毕，inner 函数仍然可以访问 count 变量
+      </pre>
+    </div>
+
+    <div class="output">
+      <strong>输出结果：</strong><br>
+      1<br>
+      2<br>
+      3
+    </div>
+
+    <h3>2.3.2 闭包的应用场景</h3>
+    
+    <div class="example">
+      <strong>1. 数据私有化</strong><br>
+      <pre>
+function createCounter() {
+  let count = 0;  // 私有变量，外部无法直接访问
+  
+  return {
+    increment() {
+      count++;
+      return count;
+    },
+    decrement() {
+      count--;
+      return count;
+    },
+    getCount() {
+      return count;
+    }
+  };
+}
+
+const counter = createCounter();
+console.log(counter.increment());  // 1
+console.log(counter.increment());  // 2
+console.log(counter.decrement());  // 1
+console.log(counter.getCount());   // 1
+// console.log(count);  // 报错：count is not defined
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>2. 函数柯里化</strong><br>
+      <pre>
+function multiply(x) {
+  return function(y) {
+    return x * y;
+  };
+}
+
+const double = multiply(2);
+const triple = multiply(3);
+
+console.log(double(5));   // 10
+console.log(double(10));  // 20
+console.log(triple(5));   // 15
+console.log(triple(10));  // 30
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>3. 记忆化（Memoization）</strong><br>
+      <pre>
+function memoize(fn) {
+  const cache = {};
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (cache[key]) {
+      console.log("从缓存读取");
+      return cache[key];
+    }
+    console.log("计算新值");
+    const result = fn(...args);
+    cache[key] = result;
+    return result;
+  };
+}
+
+const fibonacci = memoize(function(n) {
+  return n <= 1 ? n : fibonacci(n - 1) + fibonacci(n - 2);
+});
+
+console.log(fibonacci(10));  // 计算新值 → 55
+console.log(fibonacci(10));  // 从缓存读取 → 55
+      </pre>
+    </div>
+
+    <h3>2.3.3 闭包的注意事项</h3>
+    
+    <div class="warning">
+      <strong>内存泄漏风险：</strong><br>
+      闭包会保持对外部变量的引用，如果闭包长期存在，可能导致内存泄漏。
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 不好的示例：闭包持有大对象的引用
+function createHeavyObject() {
+  const bigData = new Array(1000000).fill("data");
+  return function() {
+    return bigData.length;
+  };
+}
+
+const getLength = createHeavyObject();  // bigData 不会被垃圾回收
+
+// 好的示例：只保留需要的数据
+function createLightObject() {
+  const bigData = new Array(1000000).fill("data");
+  const length = bigData.length;
+  return function() {
+    return length;
+  };
+}
+
+const getLength2 = createLightObject();  // bigData 可以被垃圾回收
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2.4 闭包经典题目</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>理解闭包的执行机制和变量捕获方式。
+    </div>
+
+    <h3>2.4.1 题目一</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+function fun(n, o) {
+  console.log(o);
+  return {
+    fun: function(m) {
+      return fun(m, n);
+    }
+  };
+}
+
+var a = fun(0);      // undefined
+a.fun(1);            // 0
+a.fun(2);            // 0
+a.fun(3);            // 0
+
+var b = fun(0)       // undefined
+  .fun(1)            // 0
+  .fun(2)            // 1
+  .fun(3);           // 2
+
+var c = fun(0)       // undefined
+  .fun(1);           // 0
+c.fun(2);            // 1
+c.fun(3);            // 1
+      </pre>
+    </div>
+
+    <div class="output">
+      <strong>输出结果：</strong><br>
+      undefined<br>
+      0<br>
+      0<br>
+      0<br>
+      undefined<br>
+      0<br>
+      1<br>
+      2<br>
+      undefined<br>
+      0<br>
+      1<br>
+      1
+    </div>
+
+    <div class="example">
+      <strong>分析：</strong><br>
+      <pre>
+// 关键点：每次调用 fun(n, o) 都会创建新的闭包
+// a.fun(1) 返回的是一个新的对象，但 a 仍然指向原来的对象
+// b 是链式调用，每次 .fun() 都返回新的对象
+// c 是链式调用后赋值，然后分别调用
+      </pre>
+    </div>
+
+    <h3>2.4.2 题目二：循环中的闭包</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 经典问题：循环中的闭包
+for (var i = 0; i < 5; i++) {
+  setTimeout(function() {
+    console.log(i);
+  }, 1000);
+}
+// 输出：5 5 5 5 5（而不是 0 1 2 3 4）
+
+// 原因：var 没有块级作用域，所有回调函数共享同一个 i
+// 当回调函数执行时，循环已经结束，i 的值是 5
+
+// 解决方案1：使用 let
+for (let i = 0; i < 5; i++) {
+  setTimeout(function() {
+    console.log(i);
+  }, 1000);
+}
+// 输出：0 1 2 3 4
+
+// 解决方案2：使用闭包
+for (var i = 0; i < 5; i++) {
+  (function(j) {
+    setTimeout(function() {
+      console.log(j);
+    }, 1000);
+  })(i);
+}
+// 输出：0 1 2 3 4
+      </pre>
+    </div>
+
+    <h3>2.4.3 题目三：闭包与变量</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+function createFunctions() {
+  var result = [];
+  
+  for (var i = 0; i < 5; i++) {
+    result.push(function() {
+      return i;
+    });
+  }
+  
+  return result;
+}
+
+var functions = createFunctions();
+console.log(functions[0]());  // 5
+console.log(functions[1]());  // 5
+console.log(functions[2]());  // 5
+console.log(functions[3]());  // 5
+console.log(functions[4]());  // 5
+
+// 原因：所有函数都引用同一个变量 i
+// 当函数被调用时，i 的值已经是 5
+
+// 解决方案：使用 IIFE 或 let
+function createFunctions2() {
+  var result = [];
+  
+  for (let i = 0; i < 5; i++) {
+    result.push(function() {
+      return i;
+    });
+  }
+  
+  return result;
+}
+
+var functions2 = createFunctions2();
+console.log(functions2[0]());  // 0
+console.log(functions2[1]());  // 1
+console.log(functions2[2]());  // 2
+console.log(functions2[3]());  // 3
+console.log(functions2[4]());  // 4
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2.5 回调函数的分类</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>回调函数分为同步回调和异步回调，执行时机不同。
+    </div>
+
+    <h3>2.5.1 同步回调</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 同步回调：立即执行
+const arr = [1, 2, 3, 4, 5];
+
+// forEach 是同步回调
+arr.forEach(function(item) {
+  console.log(item);
+});
+console.log("forEach 结束");
+
+// map 是同步回调
+const doubled = arr.map(function(item) {
+  return item * 2;
+});
+console.log(doubled);
+
+// filter 是同步回调
+const evens = arr.filter(function(item) {
+  return item % 2 === 0;
+});
+console.log(evens);
+      </pre>
+    </div>
+
+    <div class="output">
+      <strong>输出结果：</strong><br>
+      1<br>
+      2<br>
+      3<br>
+      4<br>
+      5<br>
+      "forEach 结束"<br>
+      [2, 4, 6, 8, 10]<br>
+      [2, 4]
+    </div>
+
+    <h3>2.5.2 异步回调</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 异步回调：在未来的某个时间点执行
+console.log("开始");
+
+setTimeout(function() {
+  console.log("setTimeout 回调");
+}, 1000);
+
+console.log("结束");
+
+// 输出顺序：
+// "开始"
+// "结束"
+// "setTimeout 回调"（1秒后）
+
+// Promise 的回调也是异步的
+const promise = new Promise(function(resolve) {
+  console.log("Promise 构造函数");
+  resolve("Promise resolve");
+});
+
+promise.then(function(value) {
+  console.log(value);
+});
+
+console.log("同步代码结束");
+
+// 输出顺序：
+// "Promise 构造函数"
+// "同步代码结束"
+// "Promise resolve"
+      </pre>
+    </div>
+
+    <div class="output">
+      <strong>输出结果：</strong><br>
+      "开始"<br>
+      "结束"<br>
+      "setTimeout 回调"<br>
+      "Promise 构造函数"<br>
+      "同步代码结束"<br>
+      "Promise resolve"
+    </div>
+
+    <h3>2.5.3 同步与异步的区别</h3>
+    
+    <div class="diagram">
+同步回调：
+┌─────────────┐
+│ 调用者执行   │
+│   ↓         │
+│ 执行回调函数 │ ← 立即执行
+│   ↓         │
+│ 继续执行调用者│
+└─────────────┘
+
+异步回调：
+┌─────────────┐
+│ 调用者执行   │
+│   ↓         │
+│ 注册回调函数 │ ← 不立即执行
+│   ↓         │
+│ 继续执行调用者│
+│   ...       │
+│ 回调函数执行 │ ← 在未来某个时间点执行
+└─────────────┘
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2.6 函数柯里化（Currying）</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>柯里化是将一个多参数函数转换为一系列单参数函数的技术。
+    </div>
+
+    <h3>2.6.1 柯里化的基本概念</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 普通函数
+function add(a, b, c) {
+  return a + b + c;
+}
+console.log(add(1, 2, 3));  // 6
+
+// 柯里化后的函数
+function curriedAdd(a) {
+  return function(b) {
+    return function(c) {
+      return a + b + c;
+    };
+  };
+}
+console.log(curriedAdd(1)(2)(3));  // 6
+
+// 部分应用
+const add1 = curriedAdd(1);
+const add12 = add1(2);
+console.log(add12(3));  // 6
+      </pre>
+    </div>
+
+    <div class="output">
+      <strong>输出结果：</strong><br>
+      6<br>
+      6<br>
+      6
+    </div>
+
+    <h3>2.6.2 自定义 curry 函数</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+function curry(fn) {
+  const arity = fn.length;  // 获取函数期望的参数个数
+  
+  return function curried(...args) {
+    if (args.length >= arity) {
+      // 参数足够，执行原函数
+      return fn.call(this, ...args);
+    }
+    // 参数不够，返回新函数继续接收参数
+    return curried.bind(this, ...args);
+  };
+}
+
+// 使用示例
+function multiply(a, b, c) {
+  return a * b * c;
+}
+
+const curriedMultiply = curry(multiply);
+
+console.log(curriedMultiply(2)(3)(4));    // 24
+console.log(curriedMultiply(2, 3)(4));    // 24
+console.log(curriedMultiply(2)(3, 4));    // 24
+console.log(curriedMultiply(2, 3, 4));    // 24
+
+// 部分应用
+const double = curriedMultiply(2);
+const doubleTriple = double(3);
+
+console.log(double(5)(6));      // 2 * 5 * 6 = 60
+console.log(doubleTriple(10));  // 2 * 3 * 10 = 60
+      </pre>
+    </div>
+
+    <div class="output">
+      <strong>输出结果：</strong><br>
+      24<br>
+      24<br>
+      24<br>
+      24<br>
+      60<br>
+      60
+    </div>
+
+    <h3>2.6.3 柯里化的应用场景</h3>
+    
+    <div class="example">
+      <strong>1. 参数复用</strong><br>
+      <pre>
+function createUser(role, name, age) {
+  return { role, name, age };
+}
+
+const curriedCreateUser = curry(createUser);
+
+// 创建不同角色的用户工厂
+const createAdmin = curriedCreateUser("admin");
+const createGuest = curriedCreateUser("guest");
+
+console.log(createAdmin("Alice", 25));
+// { role: "admin", name: "Alice", age: 25 }
+
+console.log(createGuest("Bob", 30));
+// { role: "guest", name: "Bob", age: 30 }
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>2. 函数组合</strong><br>
+      <pre>
+function add(a, b) {
+  return a + b;
+}
+
+function multiply(a, b) {
+  return a * b;
+}
+
+const curriedAdd = curry(add);
+const curriedMultiply = curry(multiply);
+
+// 组合函数
+const addTen = curriedAdd(10);
+const double = curriedMultiply(2);
+
+console.log(double(addTen(5)));  // (10 + 5) * 2 = 30
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>3. 日志函数</strong><br>
+      <pre>
+function log(level, timestamp, message) {
+  console.log(`[${level}] ${timestamp}: ${message}`);
+}
+
+const curriedLog = curry(log);
+
+// 创建特定级别的日志函数
+const errorLog = curriedLog("ERROR");
+const debugLog = curriedLog("DEBUG");
+
+// 创建带时间戳的日志函数
+const now = new Date().toISOString();
+const errorNow = errorLog(now);
+
+errorNow("Something went wrong!");
+// [ERROR] 2024-01-01T00:00:00.000Z: Something went wrong!
+
+debugNow("Debug message");
+// [DEBUG] 2024-01-01T00:00:00.000Z: Debug message
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2.7 练习题</h2>
+    
+    <div class="example">
+      <strong>练习1：闭包理解</strong><br>
+      <pre>
+// 分析以下代码的输出
+function outer() {
+  var x = 10;
+  function inner() {
+    console.log(x);
+  }
+  x = 20;
+  return inner;
+}
+
+var fn = outer();
+fn();  // 输出什么？为什么？
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习2：循环闭包</strong><br>
+      <pre>
+// 修复以下代码，使其输出 0, 1, 2, 3, 4
+for (var i = 0; i < 5; i++) {
+  setTimeout(function() {
+    console.log(i);
+  }, 1000);
+}
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习3：柯里化实现</strong><br>
+      <pre>
+// 实现一个 curry 函数，支持以下用法
+function sum(a, b, c) {
+  return a + b + c;
+}
+
+const curriedSum = curry(sum);
+console.log(curriedSum(1)(2)(3));    // 6
+console.log(curriedSum(1, 2)(3));    // 6
+console.log(curriedSum(1)(2, 3));    // 6
+console.log(curriedSum(1, 2, 3));    // 6
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习4：闭包应用</strong><br>
+      <pre>
+// 实现一个防抖函数
+function debounce(fn, delay) {
+  // 你的实现
+}
+
+// 测试
+const debouncedFn = debounce(function() {
+  console.log("执行");
+}, 1000);
+
+// 快速调用多次，只有最后一次会执行
+debouncedFn();
+debouncedFn();
+debouncedFn();
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2.8 本章小结</h2>
+    
+    <div class="concept">
+      <strong>重点回顾：</strong>
+      <ul>
+        <li>函数是对象，可以创建实例对象</li>
+        <li>作用域分为全局作用域、函数作用域和块级作用域</li>
+        <li>作用域链是从当前作用域到全局作用域的查找路径</li>
+        <li>闭包是函数可以访问外部作用域变量的机制</li>
+        <li>闭包可以用于数据私有化、柯里化、记忆化等</li>
+        <li>回调函数分为同步回调和异步回调</li>
+        <li>柯里化是将多参数函数转换为单参数函数的技术</li>
+      </ul>
+    </div>
+
+    <div class="concept">
+      <strong>下一章预览：</strong>
+      <ul>
+        <li>this 指向</li>
+        <li>call/apply/bind</li>
+        <li>原型链</li>
+        <li>继承</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    console.log("第二章：函数核心");
+    console.log("请打开浏览器控制台查看示例输出");
+  </script>
+</body>
+</html>

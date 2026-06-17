@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第十一章：Promise 核心方法</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .section {
+      background: white;
+      margin: 20px 0;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      border-bottom: 3px solid #16a085;
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #34495e;
+      border-left: 4px solid #16a085;
+      padding-left: 15px;
+      margin-top: 30px;
+    }
+    h3 {
+      color: #7f8c8d;
+      margin-top: 25px;
+    }
+    .concept {
+      background: #e8f6f3;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #16a085;
+    }
+    .example {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid #dee2e6;
+      font-family: 'Courier New', monospace;
+    }
+    .output {
+      background: #d4edda;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #c3e6cb;
+    }
+    .warning {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #ffeaa7;
+    }
+    code {
+      background: #f1f2f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .nav {
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: #ecf0f1;
+      border-radius: 8px;
+    }
+    .nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #3498db;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="目录.html">目录</a>
+    <a href="第十章_Promise基础.html">上一章</a>
+    <a href="第十二章_Promise静态方法.html">下一章</a>
+  </div>
+
+  <h1>第十一章：Promise 核心方法</h1>
+  
+  <div class="section">
+    <h2>11.1 then() 方法</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>then() 方法用于注册 Promise 成功和失败的回调函数，返回新的 Promise。
+    </div>
+
+    <h3>11.1.1 then() 的基本用法</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+const promise = new Promise((resolve, reject) => {
+  resolve("成功");
+});
+
+// 1. 接收一个参数：成功回调
+promise.then(value => {
+  console.log(value);  // "成功"
+});
+
+// 2. 接收两个参数：成功回调和失败回调
+promise.then(
+  value => console.log("成功:", value),
+  error => console.log("失败:", error)
+);
+
+// 3. 同一个 Promise 可以调用多次 then
+promise.then(value => console.log("回调1:", value));
+promise.then(value => console.log("回调2:", value));
+// "回调1: 成功"
+// "回调2: 成功"
+      </pre>
+    </div>
+
+    <h3>11.1.2 then() 的返回值</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+const promise = Promise.resolve("原始值");
+
+// 1. 返回普通值：新的 Promise 以该值 fulfilled
+const p1 = promise.then(value => {
+  return "新值";
+});
+p1.then(value => console.log(value));  // "新值"
+
+// 2. 不返回值：新的 Promise 以 undefined fulfilled
+const p2 = promise.then(value => {
+  console.log(value);
+});
+p2.then(value => console.log(value));  // undefined
+
+// 3. 返回 Promise：新的 Promise 与返回的 Promise 状态一致
+const p3 = promise.then(value => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve("异步值"), 1000);
+  });
+});
+p3.then(value => console.log(value));  // "异步值"
+
+// 4. 返回 thenable 对象：新的 Promise 与 thenable 的状态一致
+const p4 = promise.then(value => {
+  return {
+    then(resolve, reject) {
+      resolve("thenable 值");
+    }
+  };
+});
+p4.then(value => console.log(value));  // "thenable 值"
+      </pre>
+    </div>
+
+    <h3>11.1.3 链式调用</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 链式调用实现串行异步操作
+function fetchUser(id) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve({ id, name: "Alice" }), 1000);
+  });
+}
+
+function fetchOrders(userId) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve([{ id: 1, product: "iPhone" }]), 1000);
+  });
+}
+
+function fetchOrderDetails(orderId) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve({ id: orderId, price: 999 }), 1000);
+  });
+}
+
+// 链式调用
+fetchUser(1)
+  .then(user => {
+    console.log("用户:", user);
+    return fetchOrders(user.id);
+  })
+  .then(orders => {
+    console.log("订单:", orders);
+    return fetchOrderDetails(orders[0].id);
+  })
+  .then(details => {
+    console.log("订单详情:", details);
+  })
+  .catch(error => {
+    console.log("错误:", error);
+  });
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>11.2 catch() 方法</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>catch() 方法用于处理 Promise 的失败状态，是 then(null, rejection) 的语法糖。
+    </div>
+
+    <h3>11.2.1 catch() 的基本用法</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+const promise = new Promise((resolve, reject) => {
+  reject("失败原因");
+});
+
+// 1. 使用 catch 处理错误
+promise.catch(error => {
+  console.log(error);  // "失败原因"
+});
+
+// 2. 等价于 then(null, rejection)
+promise.then(null, error => {
+  console.log(error);  // "失败原因"
+});
+
+// 3. 在链式调用中使用 catch
+Promise.resolve("成功")
+  .then(value => {
+    throw new Error("出错了");
+  })
+  .catch(error => {
+    console.log(error.message);  // "出错了"
+  });
+      </pre>
+    </div>
+
+    <h3>11.2.2 catch() 的捕获范围</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// catch 可以捕获前面所有 then 中的错误
+Promise.resolve()
+  .then(() => {
+    throw new Error("第一个错误");
+  })
+  .then(() => {
+    console.log("不会执行");
+  })
+  .then(() => {
+    console.log("不会执行");
+  })
+  .catch(error => {
+    console.log(error.message);  // "第一个错误"
+  });
+
+// catch 后面的 then 会继续执行
+Promise.resolve()
+  .then(() => {
+    throw new Error("错误");
+  })
+  .catch(error => {
+    console.log("捕获错误:", error.message);
+    return "恢复值";
+  })
+  .then(value => {
+    console.log("继续执行:", value);  // "继续执行: 恢复值"
+  });
+
+// catch 中抛出错误
+Promise.resolve()
+  .then(() => {
+    throw new Error("第一个错误");
+  })
+  .catch(error => {
+    console.log("捕获:", error.message);
+    throw new Error("第二个错误");
+  })
+  .catch(error => {
+    console.log("再次捕获:", error.message);
+  });
+      </pre>
+    </div>
+
+    <h3>11.2.3 未处理的 Promise 拒绝</h3>
+    
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 如果 Promise 被拒绝且没有 catch 处理，会触发 unhandledrejection 事件
+window.addEventListener("unhandledrejection", event => {
+  console.log("未处理的拒绝:", event.reason);
+  event.preventDefault();
+});
+
+// 创建一个被拒绝且没有 catch 的 Promise
+const promise = Promise.reject("未处理的错误");
+
+// 在 Node.js 中，可以使用 process.on
+// process.on("unhandledRejection", (reason, promise) => {
+//   console.log("未处理的拒绝:", reason);
+// });
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>11.3 finally() 方法</h2>
+    
+    <div class="concept">
+      <strong>核心概念：</strong>finally() 方法用于注册无论 Promise 状态如何都会执行的回调函数。
+    </div>
+
+    <div class="example">
+      <strong>代码示例：</strong><br>
+      <pre>
+// 1. finally 的基本用法
+Promise.resolve("成功")
+  .then(value => {
+    console.log(value);
+  })
+  .finally(() => {
+    console.log("finally 执行");
+  });
+
+Promise.reject("失败")
+  .catch(error => {
+    console.log(error);
+  })
+  .finally(() => {
+    console.log("finally 执行");
+  });
+
+// 2. finally 不接收参数
+Promise.resolve("成功")
+  .finally((value) => {
+    console.log(value);  // undefined
+  });
+
+// 3. finally 返回值通常被忽略
+Promise.resolve("原始值")
+  .finally(() => {
+    return "finally 值";  // 被忽略
+  })
+  .then(value => {
+    console.log(value);  // "原始值"
+  });
+
+// 4. finally 中抛出错误会传递到下一个处理程序
+Promise.resolve("成功")
+  .finally(() => {
+    throw new Error("finally 中的错误");
+  })
+  .catch(error => {
+    console.log(error.message);  // "finally 中的错误"
+  });
+
+// 5. 应用场景：清理资源
+function fetchWithCleanup(url) {
+  let loading = true;
+  
+  return fetch(url)
+    .then(response => response.json())
+    .finally(() => {
+      loading = false;
+      console.log("请求完成");
+    });
+}
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>11.4 练习题</h2>
+    
+    <div class="example">
+      <strong>练习1：链式调用</strong><br>
+      <pre>
+// 实现一个函数，按顺序执行多个异步任务
+function executeSequentially(tasks) {
+  // tasks 是一个返回 Promise 的函数数组
+  // 你的实现
+}
+
+const tasks = [
+  () => new Promise(resolve => setTimeout(() => resolve(1), 1000)),
+  () => new Promise(resolve => setTimeout(() => resolve(2), 1000)),
+  () => new Promise(resolve => setTimeout(() => resolve(3), 1000))
+];
+
+executeSequentially(tasks).then(results => {
+  console.log(results);  // [1, 2, 3]
+});
+      </pre>
+    </div>
+
+    <div class="example">
+      <strong>练习2：错误处理</strong><br>
+      <pre>
+// 实现一个带有重试功能的函数
+function fetchWithRetry(url, maxRetries = 3) {
+  // 你的实现
+}
+
+fetchWithRetry("https://api.example.com/data")
+  .then(data => console.log(data))
+  .catch(error => console.log(error));
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>11.5 本章小结</h2>
+    
+    <div class="concept">
+      <strong>重点回顾：</strong>
+      <ul>
+        <li>then() 注册成功和失败的回调，返回新的 Promise</li>
+        <li>then() 返回普通值会包装为 fulfilled 的 Promise</li>
+        <li>then() 返回 Promise 会与返回的 Promise 状态一致</li>
+        <li>catch() 处理失败状态，是 then(null, rejection) 的语法糖</li>
+        <li>catch() 可以捕获前面所有 then 中的错误</li>
+        <li>finally() 无论状态如何都会执行，不接收参数</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="nav">
+    <a href="目录.html">目录</a>
+    <a href="第十章_Promise基础.html">上一章</a>
+    <a href="第十二章_Promise静态方法.html">下一章</a>
+  </div>
+
+  <script>
+    console.log("第十一章：Promise 核心方法");
+    console.log("请打开浏览器控制台查看示例输出");
+  </script>
+</body>
+</html>
