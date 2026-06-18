@@ -6,12 +6,13 @@
   <title>Promise我的实现</title>
 </head>
 <body>
+  <script src="./myPromise.js"></script>
   <script>
-    // 手诺
-    function MyPromise(executor) {
-      executor();
-    }
-
+    // 测试
+    const myPromise = new MyPromise((resolve, reject) => {
+      resolve('成功');
+    }).then(res => {
+      console.log(res);
+    })
+    console.log(myPromise);
   </script>
-</body>
-</html>

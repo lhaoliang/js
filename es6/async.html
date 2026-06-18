@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // 测试
+    async function test() {
+      return "成功"
+      // throw "失败"
+    }
+
+    test().then(res => {
+      console.log("res", res);
+    }).catch(err => {
+      console.log("err", err);
+    })
+
+    function test2() {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve("test2成功")
+        }, 1000);
+      })
+    }
+    async function test3() {
+      const obj = {};
+      console.log(obj === (await obj))
+      // const data = await test2();
+
+      const data = await 6;
+      console.log(data);
+    }
+    test3();
+  </script>
+</body>
+
+</html>

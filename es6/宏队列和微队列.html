@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宏队列和微队列</title>
+</head>
+<body>
+  <script>
+    // ============================================================
+    // 宏队列（Macro Task Queue）
+    //   - 来源：setTimeout、setInterval、I/O、UI渲染、setImmediate(Node)
+    // 微队列（Micro Task Queue）
+    //   - 来源：Promise.then/catch/finally、MutationObserver、queueMicrotask
+    //
+    // 执行规则：
+    //   每次事件循环 —— 先取出一个宏任务执行，然后清空微队列中的所有微任务。
+    //   微任务执行过程中产生的新微任务也会在本轮一并清空。
+    // ============================================================
+
+    console.log("========== 示例1：基本执行顺序 ==========");
+
+    console.log("1");                          // 同步代码，最先执行
+
+    setTimeout(() => {
+      console.log("2");                        // 宏任务
+    }, 0);
+
+    Promise.resolve().then(() => {
+      console.log("3");                        // 微任务
+    });
+
+    console.log("4");                          // 同步代码
+
+    // 输出顺序：1 → 4 → 3 → 2
+    // 解释：
+    //   同步代码先全部执行(1, 4)，
+    //   然后清空微队列(3)，
+    //   最后执行下一个宏任务(2)。
+
+    // ============================================================
+    // 示例2：微任务中产生新的微任务
+    // ============================================================
+    setTimeout(() => {
+      console.log("\n========== 示例2：微任务嵌套 ==========");
+
+      Promise.resolve().then(() => {
+        console.log("微任务1");
+        Promise.resolve().then(() => {
+          console.log("微任务2");               // 微任务中新增的微任务，本轮一并执行
+        });
+      });
+
+      setTimeout(() => {
+        console.log("宏任务");                  // 要等下一轮事件循环
+      }, 0);
+
+      // 输出：微任务1 → 微任务2 → 宏任务
+    }, 100);
+
+    // ============================================================
+    // 示例3：综合对比
+    // ============================================================
+    setTimeout(() => {
+      console.log("\n========== 示例3：综合对比 ==========");
+
+      console.log("开始");
+
+      setTimeout(() => console.log("宏任务1"), 0);
+      setTimeout(() => console.log("宏任务2"), 0);
+
+      Promise.resolve().then(() => console.log("微任务1"));
+      Promise.resolve().then(() => console.log("微任务2"));
+
+      console.log("结束");
+
+      // 输出顺序：
+      //   开始 → 结束 → 微任务1 → 微任务2 → 宏任务1 → 宏任务2
+    }, 200);
+
+    // ============================================================
+    // 示例4：async/await 的本质
+    // ============================================================
+    setTimeout(() => {
+      console.log("\n========== 示例4：async/await ==========");
+
+      async function foo() {
+        console.log("foo 开始");
+        await bar();                            // await 后面的代码相当于 .then() 中的微任务
+        console.log("foo 结束");
+      }
+
+      async function bar() {
+        console.log("bar");
+      }
+
+      console.log("全局开始");
+      foo();
+      Promise.resolve().then(() => console.log("微任务"));
+      console.log("全局结束");
+
+      // 输出顺序：
+      //   全局开始 → foo 开始 → bar → 全局结束 → foo 结束 → 微任务
+      //
+      // 注意：await bar() 之后的 console.log("foo 结束") 被放入微队列，
+      // 它比后续的 Promise.resolve().then() 更早入队，所以先执行。
+    }, 300);
+
+    // ============================================================
+    // 示例5：queueMicrotask（显式添加微任务）
+    // ============================================================
+    setTimeout(() => {
+      console.log("\n========== 示例5：queueMicrotask ==========");
+
+      console.log("A");
+
+      queueMicrotask(() => {
+        console.log("B - queueMicrotask");
+      });
+
+      Promise.resolve().then(() => {
+        console.log("C - Promise.then");
+      });
+
+      console.log("D");
+
+      // 输出：A → D → B → C
+      // queueMicrotask 和 Promise.then 都在微队列，按入队顺序执行
+    }, 400);
+  </script>
+</body>
+</html>
